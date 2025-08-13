@@ -137,7 +137,7 @@ export const Home: React.FC = () => {
           <p className="text-xl text-white opacity-90">
             Select your mood and get a personalized wallpaper with an inspiring quote
           </p>
-          {(!hasUnsplashKey || (selectedAIProvider !== 'free' && !hasCurrentAIKey)) && (
+          {((selectedImageProvider !== 'picsum' && !hasCurrentImageKey) || (selectedAIProvider !== 'free' && !hasCurrentAIKey)) && (
             <motion.div
               className="mt-4 text-sm text-white opacity-80"
               initial={{ opacity: 0, y: 10 }}
