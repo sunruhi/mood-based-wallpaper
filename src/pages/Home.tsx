@@ -71,6 +71,16 @@ export const Home: React.FC = () => {
     }
   };
 
+  const handleRestoreWallpaper = (savedWallpaper: SavedWallpaper) => {
+    setWallpaperData({
+      image: savedWallpaper.image,
+      quote: savedWallpaper.quote,
+      mood: savedWallpaper.mood
+    });
+    setSelectedMood(savedWallpaper.mood);
+    setShowHistory(false);
+  };
+
   const isLoading = isGenerating || imageLoading || quoteLoading;
   const error = imageError || quoteError;
 
