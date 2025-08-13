@@ -118,6 +118,9 @@ export const useOpenAI = (apiKey?: string, provider: AIProvider = 'free', azureE
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to generate quote';
       setError(errorMessage);
+
+      // If there's an API error and we're not using free provider,
+      // return fallback but keep the error state
       return getFallbackQuote(mood);
     } finally {
       setLoading(false);
