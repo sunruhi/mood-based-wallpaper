@@ -143,7 +143,9 @@ export const Home: React.FC = () => {
               transition={{ delay: 0.8 }}
             >
               <p>
-                Using fallback content. Click the settings icon to add API keys for enhanced functionality.
+                {selectedAIProvider === 'free'
+                  ? 'Using Free AI. Add Unsplash API key for better images, or upgrade AI provider for enhanced quotes.'
+                  : 'Using fallback content. Click the settings icon to add API keys for enhanced functionality.'}
               </p>
             </motion.div>
           )}
