@@ -66,6 +66,21 @@ export const useApiKeys = () => {
     }
   };
 
+  // Get the current image provider's API key
+  const getCurrentImageKey = (): string => {
+    switch (apiKeys.selectedImageProvider) {
+      case 'unsplash':
+        return apiKeys.unsplashKey;
+      case 'pixabay':
+        return apiKeys.pixabayKey;
+      case 'pexels':
+        return apiKeys.pexelsKey;
+      case 'picsum':
+      default:
+        return '';
+    }
+  };
+
   return {
     apiKeys,
     saveApiKeys,
