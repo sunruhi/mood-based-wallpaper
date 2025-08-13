@@ -34,22 +34,25 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const imageDropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setShowProviderDropdown(false);
       }
+      if (imageDropdownRef.current && !imageDropdownRef.current.contains(event.target as Node)) {
+        setShowImageProviderDropdown(false);
+      }
     };
 
-    if (showProviderDropdown) {
+    if (showProviderDropdown || showImageProviderDropdown) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showProviderDropdown]);
+  }, [showProviderDropdown, showImageProviderDropdown]);
 
   const handleSave = () => {
     onSave(formKeys);
