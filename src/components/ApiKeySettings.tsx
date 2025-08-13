@@ -19,7 +19,6 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
   isOpen
 }) => {
   const [formKeys, setFormKeys] = useState<ApiKeys>(apiKeys);
-  const [showUnsplashKey, setShowUnsplashKey] = useState(false);
   const [showProviderDropdown, setShowProviderDropdown] = useState(false);
   const [showImageProviderDropdown, setShowImageProviderDropdown] = useState(false);
   const [showApiKeys, setShowApiKeys] = useState<Record<string, boolean>>({
@@ -28,7 +27,8 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
     googleKey: false,
     azureKey: false,
     pixabayKey: false,
-    pexelsKey: false
+    pexelsKey: false,
+    unsplashKey: false
   });
 
   const dropdownRef = useRef<HTMLDivElement>(null);
