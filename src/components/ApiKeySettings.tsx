@@ -60,7 +60,19 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
   };
 
   const handleInputChange = (field: keyof ApiKeys, value: string) => {
-    setFormKeys(prev => ({ ...prev, [field]: value }));
+    setFormKeys(prev => {
+      const updated = { ...prev, [field]: value };
+
+      // If user clears a paid AI provider's key, auto-switch to free
+      if (field.includes('Key') && field !== 'unsplashKey' && field !== 'pixabayKey' && field !== 'pexelsKey' && value.trim() === '') {
+        const providerField = field.replace('Key', '') as AIProvider;
+        if (updated.selectedAIProvider === providerField) {
+          updated.selectedAIProvider = 'free';
+        }
+      }
+
+      return updated;
+    });
   };
 
   const handleProviderSelect = (providerId: AIProvider) => {
