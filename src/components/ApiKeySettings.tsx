@@ -89,20 +89,30 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ type: "spring", damping: 20, stiffness: 300 }}
           >
-            <div className="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[95vh] overflow-hidden backdrop-blur-sm border border-gray-100">
               {/* Header */}
-              <div className="flex items-center justify-between p-6 border-b border-gray-200">
-                <div className="flex items-center gap-3">
-                  <Settings className="w-6 h-6 text-blue-500" />
-                  <h2 className="text-xl font-bold text-gray-800">API Settings</h2>
+              <div className="relative bg-gradient-to-r from-blue-500 to-purple-600 p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-white bg-opacity-20 rounded-lg backdrop-blur-sm">
+                      <Settings className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-bold text-white">API Settings</h2>
+                      <p className="text-sm text-white opacity-80">Configure your API preferences</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={onClose}
+                    className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-all duration-200 text-white"
+                    data-testid="close-settings"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
                 </div>
-                <button
-                  onClick={onClose}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                  data-testid="close-settings"
-                >
-                  <X className="w-5 h-5 text-gray-500" />
-                </button>
+                {/* Decorative elements */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full -translate-y-16 translate-x-16"></div>
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-5 rounded-full translate-y-12 -translate-x-12"></div>
               </div>
 
               {/* Content */}
