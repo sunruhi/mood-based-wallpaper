@@ -20,10 +20,19 @@ export const Home: React.FC = () => {
   const [wallpaperData, setWallpaperData] = useState<WallpaperData | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  
+  const [showHistory, setShowHistory] = useState(false);
+
   const { apiKeys, saveApiKeys, hasUnsplashKey, hasOpenaiKey } = useApiKeys();
   const { fetchImageByMood, loading: imageLoading, error: imageError } = useUnsplashAPI(apiKeys.unsplashKey);
   const { generateQuote, loading: quoteLoading, error: quoteError } = useOpenAI(apiKeys.openaiKey);
+  const {
+    history,
+    saveWallpaper,
+    removeWallpaper,
+    clearHistory,
+    toggleFavorite,
+    totalCount
+  } = useWallpaperHistory();
 
   const handleMoodSelect = async (moodId: string) => {
     const mood = moodId as Mood;
