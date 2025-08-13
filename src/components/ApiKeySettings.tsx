@@ -55,6 +55,30 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
   }, [showProviderDropdown, showImageProviderDropdown]);
 
   const handleSave = () => {
+    // Validate that paid AI providers have API keys
+    if (formKeys.selectedAIProvider !== 'free') {
+      const keyField = `${formKeys.selectedAIProvider}Key` as keyof ApiKeys;
+      const apiKeyValue = formKeys[keyField] as string;
+
+      if (!apiKeyValue || !apiKeyValue.trim()) {
+        // Show error - don't save
+        alert(`Please enter your ${selectedProvider.name} API key before saving.`);
+        return;
+      }
+    }
+
+    // Validate that paid image providers have API keys
+    if (selectedImageProvider.requiresApiKey) {
+      const keyField = `${formKeys.selectedImageProvider}Key` as keyof ApiKeys;
+      const apiKeyValue = formKeys[keyField] as string;
+
+      if (!apiKeyValue || !apiKeyValue.trim()) {
+        // Show error - don't save
+        alert(`Please enter your ${selectedImageProvider.name} API key before saving.`);
+        return;
+      }
+    }
+
     onSave(formKeys);
     onClose();
   };
