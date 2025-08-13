@@ -216,6 +216,17 @@ export const Home: React.FC = () => {
         onClose={() => setShowSettings(false)}
         isOpen={showSettings}
       />
+
+      {/* History Panel */}
+      <HistoryPanel
+        isOpen={showHistory}
+        onClose={() => setShowHistory(false)}
+        history={history}
+        onRestoreWallpaper={handleRestoreWallpaper}
+        onRemoveWallpaper={removeWallpaper}
+        onToggleFavorite={toggleFavorite}
+        onClearHistory={clearHistory}
+      />
     </div>
   );
 };
