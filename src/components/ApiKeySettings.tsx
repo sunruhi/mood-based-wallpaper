@@ -89,7 +89,7 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ type: "spring", damping: 20, stiffness: 300 }}
           >
-            <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[95vh] overflow-hidden backdrop-blur-sm border border-gray-100">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col backdrop-blur-sm border border-gray-100">
               {/* Header */}
               <div className="relative bg-gradient-to-r from-blue-500 to-purple-600 p-6">
                 <div className="flex items-center justify-between">
