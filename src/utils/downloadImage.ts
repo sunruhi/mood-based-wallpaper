@@ -13,8 +13,6 @@ export const downloadWallpaper = async (elementId: string, filename: string = 'm
       logging: false,
       useCORS: true,
       allowTaint: true,
-      width: 1920,
-      height: 1080,
     });
 
     // Convert canvas to blob and create download link
