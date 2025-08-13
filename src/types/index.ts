@@ -37,9 +37,25 @@ export interface WallpaperData {
   mood: Mood;
 }
 
+export type AIProvider = 'free' | 'openai' | 'anthropic' | 'google' | 'azure';
+
+export interface AIProviderConfig {
+  id: AIProvider;
+  name: string;
+  description: string;
+  requiresApiKey: boolean;
+  getKeyUrl?: string;
+  icon?: string;
+}
+
 export interface ApiKeys {
   unsplashKey: string;
+  selectedAIProvider: AIProvider;
   openaiKey: string;
+  anthropicKey: string;
+  googleKey: string;
+  azureKey: string;
+  azureEndpoint: string;
 }
 
 export interface SavedWallpaper extends WallpaperData {
