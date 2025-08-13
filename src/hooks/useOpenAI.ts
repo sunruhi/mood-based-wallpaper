@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { GeneratedQuote, Mood } from '../types';
+import { GeneratedQuote, Mood, AIProvider } from '../types';
 
-export const useOpenAI = (apiKey?: string) => {
+export const useOpenAI = (apiKey?: string, provider: AIProvider = 'free', azureEndpoint?: string) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
