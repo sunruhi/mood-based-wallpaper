@@ -322,7 +322,7 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
               </div>
 
               {/* Footer */}
-              <div className="flex-shrink-0 flex gap-4 p-6 bg-gray-50 border-t border-gray-200">
+              <div className="flex-shrink-0 flex gap-4 p-6 bg-gray-50 border-t border-gray-200 rounded-b-2xl">
                 <button
                   onClick={onClose}
                   className="flex-1 px-6 py-3 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-medium shadow-sm"
