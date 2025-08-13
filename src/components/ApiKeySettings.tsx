@@ -142,20 +142,8 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
 
   const canSave = isValidConfiguration();
 
-  // Filter provider list based on current selection
-  const getFilteredProviderList = () => {
-    const allProviders = getProviderList();
-
-    // If a paid provider is selected, hide the free option
-    if (formKeys.selectedAIProvider !== 'free') {
-      return allProviders.filter(provider => provider.id !== 'free');
-    }
-
-    // If free is selected, show all options
-    return allProviders;
-  };
-
-  const providerList = getFilteredProviderList();
+  // Always show all providers including free option for easy switching
+  const providerList = getProviderList();
 
   return (
     <AnimatePresence>
