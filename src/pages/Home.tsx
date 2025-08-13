@@ -22,8 +22,8 @@ export const Home: React.FC = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
 
-  const { apiKeys, saveApiKeys, hasUnsplashKey, hasCurrentAIKey, getCurrentAIKey, selectedAIProvider } = useApiKeys();
-  const { fetchImageByMood, loading: imageLoading, error: imageError } = useUnsplashAPI(apiKeys.unsplashKey);
+  const { apiKeys, saveApiKeys, hasCurrentImageKey, hasCurrentAIKey, getCurrentAIKey, getCurrentImageKey, selectedAIProvider, selectedImageProvider } = useApiKeys();
+  const { fetchImageByMood, loading: imageLoading, error: imageError } = useImageAPI(selectedImageProvider, getCurrentImageKey());
   const { generateQuote, loading: quoteLoading, error: quoteError } = useOpenAI(
     getCurrentAIKey(),
     selectedAIProvider,
