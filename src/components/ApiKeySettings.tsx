@@ -357,56 +357,35 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
                           transition={{ duration: 0.2 }}
                           className="absolute top-full left-0 right-0 z-20 mt-2 bg-white border border-gray-200 rounded-xl shadow-xl max-h-64 overflow-y-auto backdrop-blur-sm"
                         >
-                          {providerList.map((provider, index) => {
-                            const keyField = `${provider.id}Key` as keyof ApiKeys;
-                            const hasApiKey = provider.id === 'free' || Boolean((formKeys[keyField] as string)?.trim());
-                            const isDisabled = provider.id !== 'free' && !hasApiKey;
-
-                            return (
-                              <motion.button
-                                key={provider.id}
-                                type="button"
-                                onClick={() => !isDisabled && handleProviderSelect(provider.id)}
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: index * 0.05 }}
-                                disabled={isDisabled}
-                                className={`w-full flex items-center gap-4 px-4 py-4 text-left transition-all duration-200 ${
-                                  isDisabled
-                                    ? 'opacity-50 cursor-not-allowed bg-gray-50'
-                                    : formKeys.selectedAIProvider === provider.id
-                                      ? 'bg-gradient-to-r from-purple-50 to-blue-50 text-purple-600 border-l-4 border-purple-500'
-                                      : 'text-gray-900 hover:bg-gray-50'
-                                } ${index === 0 ? 'rounded-t-xl' : ''} ${index === providerList.length - 1 ? 'rounded-b-xl' : ''}`}
-                              >
-                                <div className="text-2xl w-10 h-10 flex items-center justify-center bg-gray-100 rounded-lg">
-                                  {provider.icon}
+                          {providerList.map((provider, index) => (
+                            <motion.button
+                              key={provider.id}
+                              type="button"
+                              onClick={() => handleProviderSelect(provider.id)}
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: index * 0.05 }}
+                              className={`w-full flex items-center gap-4 px-4 py-4 text-left transition-all duration-200 ${
+                                formKeys.selectedAIProvider === provider.id
+                                  ? 'bg-gradient-to-r from-purple-50 to-blue-50 text-purple-600 border-l-4 border-purple-500'
+                                  : 'text-gray-900 hover:bg-gray-50'
+                              } ${index === 0 ? 'rounded-t-xl' : ''} ${index === providerList.length - 1 ? 'rounded-b-xl' : ''}`}
+                            >
+                              <div className="text-2xl w-10 h-10 flex items-center justify-center bg-gray-100 rounded-lg">
+                                {provider.icon}
+                              </div>
+                              <div className="flex-1">
+                                <div className="font-semibold">{provider.name}</div>
+                                <div className="text-sm text-gray-500">{provider.description}</div>
+                              </div>
+                              {formKeys.selectedAIProvider === provider.id && (
+                                <div className="flex items-center gap-2">
+                                  <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+                                  <span className="text-xs font-medium text-purple-600">Active</span>
                                 </div>
-                                <div className="flex-1">
-                                  <div className="font-semibold">{provider.name}</div>
-                                  <div className="text-sm text-gray-500">
-                                    {provider.description}
-                                    {isDisabled && (
-                                      <span className="block text-red-500 text-xs mt-1">
-                                        API key required
-                                      </span>
-                                    )}
-                                  </div>
-                                </div>
-                                {formKeys.selectedAIProvider === provider.id && (
-                                  <div className="flex items-center gap-2">
-                                    <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
-                                    <span className="text-xs font-medium text-purple-600">Active</span>
-                                  </div>
-                                )}
-                                {isDisabled && (
-                                  <div className="text-red-400">
-                                    🔒
-                                  </div>
-                                )}
-                              </motion.button>
-                            );
-                          })}
+                              )}
+                            </motion.button>
+                          ))}
                         </motion.div>
                       )}
                     </AnimatePresence>
