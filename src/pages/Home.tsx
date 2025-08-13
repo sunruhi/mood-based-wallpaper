@@ -8,7 +8,7 @@ import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { ApiKeySettings } from '../components/ApiKeySettings';
 import { HistoryPanel } from '../components/HistoryPanel';
-import { useUnsplashAPI } from '../hooks/useUnsplashAPI';
+import { useImageAPI } from '../hooks/useImageAPI';
 import { useOpenAI } from '../hooks/useOpenAI';
 import { useApiKeys } from '../hooks/useApiKeys';
 import { useWallpaperHistory } from '../hooks/useWallpaperHistory';
