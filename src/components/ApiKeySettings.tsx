@@ -116,13 +116,20 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
               </div>
 
               {/* Content */}
-              <div className="p-6 space-y-6">
-                <div className="text-sm text-gray-600 bg-blue-50 p-4 rounded-lg">
-                  <p className="mb-2">
-                    <strong>Optional:</strong> Add your API keys for enhanced functionality.
-                    The app works with fallback content without keys.
-                  </p>
-                  <p>Your keys are stored locally and never sent to our servers.</p>
+              <div className="p-6 space-y-6 max-h-[calc(95vh-140px)] overflow-y-auto">
+                <div className="relative bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-xl border border-blue-100">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm font-bold">ℹ</span>
+                    </div>
+                    <div className="text-sm">
+                      <p className="text-gray-700 mb-2 font-medium">
+                        <span className="text-blue-600 font-semibold">Optional:</span> Add your API keys for enhanced functionality.
+                        The app works with fallback content without keys.
+                      </p>
+                      <p className="text-gray-600">🔒 Your keys are stored locally and never sent to our servers.</p>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Unsplash API Key */}
