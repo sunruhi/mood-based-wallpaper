@@ -41,3 +41,9 @@ export interface ApiKeys {
   unsplashKey: string;
   openaiKey: string;
 }
+
+export interface SavedWallpaper extends WallpaperData {
+  id: string;
+  createdAt: string;
+  title?: string;
+}
