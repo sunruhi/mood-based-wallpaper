@@ -6,7 +6,10 @@ import { DEFAULT_IMAGE_PROVIDER } from '../config/imageProviders';
 const STORAGE_KEY = 'mood-wallpaper-api-keys';
 
 const getDefaultApiKeys = (): ApiKeys => ({
+  selectedImageProvider: DEFAULT_IMAGE_PROVIDER,
   unsplashKey: '',
+  pixabayKey: '',
+  pexelsKey: '',
   selectedAIProvider: DEFAULT_AI_PROVIDER,
   openaiKey: '',
   anthropicKey: '',
