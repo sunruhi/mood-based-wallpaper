@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Settings, Eye, EyeOff, Key, X, Save, ExternalLink, ChevronDown } from 'lucide-react';
 import { ApiKeys, AIProvider } from '../types';
