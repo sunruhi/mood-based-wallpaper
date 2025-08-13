@@ -145,9 +145,9 @@ export const Home: React.FC = () => {
               transition={{ delay: 0.8 }}
             >
               <p>
-                {selectedAIProvider === 'free'
-                  ? 'Using Free AI. Add Unsplash API key for better images, or upgrade AI provider for enhanced quotes.'
-                  : 'Using fallback content. Click the settings icon to add API keys for enhanced functionality.'}
+                {selectedAIProvider === 'free' && selectedImageProvider === 'picsum'
+                  ? 'Using Free providers. Upgrade to premium providers for enhanced quality and variety.'
+                  : 'Add API keys in settings for enhanced functionality and better quality content.'}
               </p>
             </motion.div>
           )}
