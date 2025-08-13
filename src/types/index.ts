@@ -46,4 +46,5 @@ export interface SavedWallpaper extends WallpaperData {
   id: string;
   createdAt: string;
   title?: string;
+  isFavorite?: boolean;
 }
