@@ -183,7 +183,7 @@ export const Home: React.FC = () => {
             />
           )}
 
-          {wallpaperData && !isLoading && (
+          {wallpaperData && !isLoading && !error && (
             <motion.div
               className="space-y-6"
               initial={{ opacity: 0 }}
