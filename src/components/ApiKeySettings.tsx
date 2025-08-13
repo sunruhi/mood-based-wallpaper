@@ -252,17 +252,25 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
 
                 {/* Dynamic API Key Field */}
                 {selectedProvider.requiresApiKey && (
-                  <div className="space-y-3">
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="space-y-4 bg-white p-5 rounded-xl border border-gray-200 shadow-sm"
+                  >
                     <div className="flex items-center justify-between">
-                      <label className="block text-sm font-medium text-gray-700">
-                        {selectedProvider.name} API Key
-                      </label>
+                      <div className="flex items-center gap-2">
+                        <div className="text-lg">{selectedProvider.icon}</div>
+                        <label className="text-sm font-semibold text-gray-800">
+                          {selectedProvider.name} API Key
+                        </label>
+                      </div>
                       {selectedProvider.getKeyUrl && (
                         <a
                           href={selectedProvider.getKeyUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-500 hover:text-blue-600 text-sm flex items-center gap-1"
+                          className="text-purple-500 hover:text-purple-600 text-sm flex items-center gap-1 font-medium transition-colors bg-purple-50 px-3 py-1 rounded-lg hover:bg-purple-100"
                         >
                           Get Key <ExternalLink className="w-3 h-3" />
                         </a>
@@ -271,19 +279,19 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
 
                     {/* API Key Input */}
                     <div className="relative">
-                      <Key className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <Key className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                       <input
                         type={showApiKeys[`${selectedProvider.id}Key`] ? 'text' : 'password'}
                         value={formKeys[`${selectedProvider.id}Key` as keyof ApiKeys] as string || ''}
                         onChange={(e) => handleInputChange(`${selectedProvider.id}Key` as keyof ApiKeys, e.target.value)}
                         placeholder={`Enter your ${selectedProvider.name} API key`}
-                        className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all shadow-sm"
                         data-testid={`${selectedProvider.id}-key-input`}
                       />
                       <button
                         type="button"
                         onClick={() => toggleKeyVisibility(`${selectedProvider.id}Key`)}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                       >
                         {showApiKeys[`${selectedProvider.id}Key`] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
@@ -292,22 +300,24 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
                     {/* Azure Endpoint Field (only for Azure) */}
                     {selectedProvider.id === 'azure' && (
                       <div className="relative">
-                        <Key className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <Key className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
                           type="text"
                           value={formKeys.azureEndpoint || ''}
                           onChange={(e) => handleInputChange('azureEndpoint', e.target.value)}
                           placeholder="Enter your Azure OpenAI endpoint"
-                          className="w-full pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full pl-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all shadow-sm"
                           data-testid="azure-endpoint-input"
                         />
                       </div>
                     )}
 
-                    <p className="text-xs text-gray-500">
-                      For AI-generated personalized quotes
-                    </p>
-                  </div>
+                    <div className="bg-gradient-to-r from-purple-50 to-blue-50 px-4 py-3 rounded-lg border border-purple-100">
+                      <p className="text-sm text-gray-700">
+                        🎯 <strong>AI-generated personalized quotes</strong> tailored to your selected mood
+                      </p>
+                    </div>
+                  </motion.div>
                 )}
               </div>
 
