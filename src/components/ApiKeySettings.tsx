@@ -322,20 +322,20 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
               </div>
 
               {/* Footer */}
-              <div className="flex gap-3 p-6 border-t border-gray-200">
+              <div className="flex gap-4 p-6 bg-gray-50 border-t border-gray-200">
                 <button
                   onClick={onClose}
-                  className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                  className="flex-1 px-6 py-3 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-medium shadow-sm"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSave}
-                  className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 flex items-center justify-center gap-2 font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
                   data-testid="save-keys"
                 >
                   <Save className="w-4 h-4" />
-                  Save Keys
+                  Save Settings
                 </button>
               </div>
             </div>
