@@ -76,22 +76,7 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
   };
 
   const handleProviderSelect = (providerId: AIProvider) => {
-    setFormKeys(prev => {
-      const updated = { ...prev, selectedAIProvider: providerId };
-
-      // If selecting a paid provider without an API key, don't allow the selection
-      if (providerId !== 'free') {
-        const keyField = `${providerId}Key` as keyof ApiKeys;
-        const hasKey = Boolean((updated[keyField] as string)?.trim());
-
-        if (!hasKey) {
-          // Keep the current selection if no API key is available
-          return prev;
-        }
-      }
-
-      return updated;
-    });
+    setFormKeys(prev => ({ ...prev, selectedAIProvider: providerId }));
     setShowProviderDropdown(false);
   };
 
