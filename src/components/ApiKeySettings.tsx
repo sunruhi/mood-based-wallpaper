@@ -160,7 +160,7 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
                   </label>
 
                   {/* Provider Dropdown */}
-                  <div className="relative">
+                  <div className="relative" ref={dropdownRef}>
                     <button
                       type="button"
                       onClick={() => setShowProviderDropdown(!showProviderDropdown)}
