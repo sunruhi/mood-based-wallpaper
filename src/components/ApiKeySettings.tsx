@@ -27,6 +27,25 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
     azureKey: false
   });
 
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowProviderDropdown(false);
+      }
+    };
+
+    if (showProviderDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showProviderDropdown]);
+
   const handleSave = () => {
     onSave(formKeys);
     onClose();
