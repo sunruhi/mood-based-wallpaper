@@ -512,6 +512,18 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
                 )}
               </div>
 
+              {/* Validation Warning */}
+              {!canSave && (
+                <div className="px-6 py-3 bg-amber-50 border-t border-amber-200">
+                  <div className="flex items-center gap-2 text-amber-700">
+                    <span className="text-sm">⚠️</span>
+                    <span className="text-sm font-medium">
+                      Please add API keys for selected paid providers before saving.
+                    </span>
+                  </div>
+                </div>
+              )}
+
               {/* Footer */}
               <div className="flex-shrink-0 flex gap-4 p-6 bg-gray-50 border-t border-gray-200 rounded-b-2xl">
                 <button
