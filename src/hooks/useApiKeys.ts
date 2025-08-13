@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ApiKeys } from '../types';
 import { DEFAULT_AI_PROVIDER } from '../config/aiProviders';
+import { DEFAULT_IMAGE_PROVIDER } from '../config/imageProviders';
 
 const STORAGE_KEY = 'mood-wallpaper-api-keys';
 
