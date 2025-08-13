@@ -48,11 +48,15 @@ export const Home: React.FC = () => {
       ]);
 
       if (image && quote) {
-        setWallpaperData({
+        const newWallpaperData = {
           image,
           quote,
           mood
-        });
+        };
+        setWallpaperData(newWallpaperData);
+
+        // Auto-save to history
+        saveWallpaper(newWallpaperData);
       }
     } catch (error) {
       console.error('Error generating wallpaper:', error);
