@@ -21,14 +21,18 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
   const [formKeys, setFormKeys] = useState<ApiKeys>(apiKeys);
   const [showUnsplashKey, setShowUnsplashKey] = useState(false);
   const [showProviderDropdown, setShowProviderDropdown] = useState(false);
+  const [showImageProviderDropdown, setShowImageProviderDropdown] = useState(false);
   const [showApiKeys, setShowApiKeys] = useState<Record<string, boolean>>({
     openaiKey: false,
     anthropicKey: false,
     googleKey: false,
-    azureKey: false
+    azureKey: false,
+    pixabayKey: false,
+    pexelsKey: false
   });
 
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const imageDropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
