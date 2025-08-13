@@ -38,6 +38,7 @@ export interface WallpaperData {
 }
 
 export type AIProvider = 'free' | 'openai' | 'anthropic' | 'google' | 'azure';
+export type ImageProvider = 'picsum' | 'pixabay' | 'pexels' | 'unsplash';
 
 export interface AIProviderConfig {
   id: AIProvider;
@@ -46,6 +47,16 @@ export interface AIProviderConfig {
   requiresApiKey: boolean;
   getKeyUrl?: string;
   icon?: string;
+}
+
+export interface ImageProviderConfig {
+  id: ImageProvider;
+  name: string;
+  description: string;
+  requiresApiKey: boolean;
+  getKeyUrl?: string;
+  icon?: string;
+  isFree: boolean;
 }
 
 export interface ApiKeys {
