@@ -86,9 +86,12 @@ export const useApiKeys = () => {
     saveApiKeys,
     clearApiKeys,
     getCurrentAIKey,
+    getCurrentImageKey,
     hasUnsplashKey: Boolean(apiKeys.unsplashKey.trim()),
     hasOpenaiKey: Boolean(apiKeys.openaiKey.trim()),
     hasCurrentAIKey: Boolean(getCurrentAIKey().trim()),
-    selectedAIProvider: apiKeys.selectedAIProvider
+    hasCurrentImageKey: Boolean(getCurrentImageKey().trim()),
+    selectedAIProvider: apiKeys.selectedAIProvider,
+    selectedImageProvider: apiKeys.selectedImageProvider
   };
 };
