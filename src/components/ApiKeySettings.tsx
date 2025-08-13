@@ -222,7 +222,10 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
                   </div>
                 </div>
 
-                {/* Image Provider Selection */}
+                {/* Image Provider Selection - Only show when Free AI is selected */}
+                {formKeys.selectedAIProvider === 'free' && (
+                  <>
+                    {/* Image Provider Selection */}
                 <div className="space-y-4 bg-gray-50 p-5 rounded-xl border border-gray-200">
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 bg-green-500 rounded-md flex items-center justify-center">
@@ -364,7 +367,8 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
                     </div>
                   </motion.div>
                 )}
-
+                  </>
+                )}
 
                 {/* AI Provider Selection */}
                 <div className="space-y-4 bg-gray-50 p-5 rounded-xl border border-gray-200">
