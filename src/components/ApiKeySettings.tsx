@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Settings, Eye, EyeOff, Key, X, Save, ExternalLink, ChevronDown } from 'lucide-react';
-import { ApiKeys, AIProvider } from '../types';
+import { ApiKeys, AIProvider, ImageProvider } from '../types';
 import { AI_PROVIDERS, getProviderConfig, getProviderList } from '../config/aiProviders';
+import { IMAGE_PROVIDERS, getImageProviderConfig, getImageProviderList } from '../config/imageProviders';
 
 interface ApiKeySettingsProps {
   apiKeys: ApiKeys;
