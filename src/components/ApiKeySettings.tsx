@@ -91,7 +91,7 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
           >
             <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col backdrop-blur-sm border border-gray-100">
               {/* Header */}
-              <div className="relative bg-gradient-to-r from-blue-500 to-purple-600 p-6">
+              <div className="relative bg-gradient-to-r from-blue-500 to-purple-600 p-6 rounded-t-2xl">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-white bg-opacity-20 rounded-lg backdrop-blur-sm">
