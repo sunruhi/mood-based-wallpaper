@@ -176,26 +176,33 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
                 </div>
 
                 {/* AI Provider Selection */}
-                <div className="space-y-3">
-                  <label className="block text-sm font-medium text-gray-700">
-                    AI Quote Provider
-                  </label>
+                <div className="space-y-4 bg-gray-50 p-5 rounded-xl border border-gray-200">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 bg-purple-500 rounded-md flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">🤖</span>
+                    </div>
+                    <label className="text-sm font-semibold text-gray-800">
+                      AI Quote Provider
+                    </label>
+                  </div>
 
                   {/* Provider Dropdown */}
                   <div className="relative" ref={dropdownRef}>
                     <button
                       type="button"
                       onClick={() => setShowProviderDropdown(!showProviderDropdown)}
-                      className="w-full flex items-center justify-between px-4 py-3 bg-white border border-gray-300 rounded-lg hover:border-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                      className="w-full flex items-center justify-between px-4 py-4 bg-white border border-gray-300 rounded-xl hover:border-purple-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all shadow-sm hover:shadow-md"
                     >
                       <div className="flex items-center gap-3">
-                        <span className="text-lg">{selectedProvider.icon}</span>
+                        <div className="text-2xl w-8 h-8 flex items-center justify-center bg-gray-100 rounded-lg">
+                          {selectedProvider.icon}
+                        </div>
                         <div className="text-left">
-                          <div className="font-medium text-gray-900">{selectedProvider.name}</div>
-                          <div className="text-sm text-gray-500">{selectedProvider.description}</div>
+                          <div className="font-semibold text-gray-900">{selectedProvider.name}</div>
+                          <div className="text-sm text-gray-600">{selectedProvider.description}</div>
                         </div>
                       </div>
-                      <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${showProviderDropdown ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${showProviderDropdown ? 'rotate-180' : ''}`} />
                     </button>
 
                     {/* Dropdown Menu */}
