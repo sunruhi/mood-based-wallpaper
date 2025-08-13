@@ -128,8 +128,8 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
       }
     }
 
-    // Check image provider
-    if (selectedImageProvider.requiresApiKey) {
+    // Check image provider (only when free AI is selected)
+    if (formKeys.selectedAIProvider === 'free' && selectedImageProvider.requiresApiKey) {
       const keyField = `${formKeys.selectedImageProvider}Key` as keyof ApiKeys;
       const apiKeyValue = formKeys[keyField] as string;
       if (!apiKeyValue || !apiKeyValue.trim()) {
