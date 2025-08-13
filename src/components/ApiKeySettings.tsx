@@ -522,11 +522,16 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
                 </button>
                 <button
                   onClick={handleSave}
-                  className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 flex items-center justify-center gap-2 font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
+                  disabled={!canSave}
+                  className={`flex-1 px-6 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 font-medium shadow-lg ${
+                    canSave
+                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 hover:shadow-xl transform hover:scale-105'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
                   data-testid="save-keys"
                 >
                   <Save className="w-4 h-4" />
-                  Save Settings
+                  {canSave ? 'Save Settings' : 'API Keys Required'}
                 </button>
               </div>
             </div>
