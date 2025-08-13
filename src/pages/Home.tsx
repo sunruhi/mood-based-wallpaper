@@ -87,13 +87,28 @@ export const Home: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-500 to-red-500">
       <div className="container mx-auto px-4 py-8">
-        {/* Settings Button */}
+        {/* Action Buttons */}
         <motion.div
-          className="fixed top-4 right-4 z-30"
+          className="fixed top-4 right-4 z-30 flex gap-3"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.5 }}
         >
+          {/* History Button */}
+          <button
+            onClick={() => setShowHistory(true)}
+            className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-opacity-30 transition-all duration-200 shadow-lg relative"
+            data-testid="history-button"
+          >
+            <Clock className="w-5 h-5" />
+            {totalCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {totalCount > 9 ? '9+' : totalCount}
+              </span>
+            )}
+          </button>
+
+          {/* Settings Button */}
           <button
             onClick={() => setShowSettings(true)}
             className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-opacity-30 transition-all duration-200 shadow-lg"
