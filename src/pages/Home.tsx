@@ -22,9 +22,13 @@ export const Home: React.FC = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
 
-  const { apiKeys, saveApiKeys, hasUnsplashKey, hasOpenaiKey } = useApiKeys();
+  const { apiKeys, saveApiKeys, hasUnsplashKey, hasCurrentAIKey, getCurrentAIKey, selectedAIProvider } = useApiKeys();
   const { fetchImageByMood, loading: imageLoading, error: imageError } = useUnsplashAPI(apiKeys.unsplashKey);
-  const { generateQuote, loading: quoteLoading, error: quoteError } = useOpenAI(apiKeys.openaiKey);
+  const { generateQuote, loading: quoteLoading, error: quoteError } = useOpenAI(
+    getCurrentAIKey(),
+    selectedAIProvider,
+    apiKeys.azureEndpoint
+  );
   const {
     history,
     saveWallpaper,
