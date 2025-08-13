@@ -147,7 +147,150 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
                   </div>
                 </div>
 
-                {/* Unsplash API Key */}
+                {/* Image Provider Selection */}
+                <div className="space-y-4 bg-gray-50 p-5 rounded-xl border border-gray-200">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 bg-green-500 rounded-md flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">🖼️</span>
+                    </div>
+                    <label className="text-sm font-semibold text-gray-800">
+                      Image Provider
+                    </label>
+                  </div>
+
+                  {/* Image Provider Dropdown */}
+                  <div className="relative" ref={imageDropdownRef}>
+                    <button
+                      type="button"
+                      onClick={() => setShowImageProviderDropdown(!showImageProviderDropdown)}
+                      className="w-full flex items-center justify-between px-4 py-4 bg-white border border-gray-300 rounded-xl hover:border-green-400 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all shadow-sm hover:shadow-md"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="text-2xl w-8 h-8 flex items-center justify-center bg-gray-100 rounded-lg">
+                          {selectedImageProvider.icon}
+                        </div>
+                        <div className="text-left">
+                          <div className="font-semibold text-gray-900 flex items-center gap-2">
+                            {selectedImageProvider.name}
+                            {selectedImageProvider.isFree && (
+                              <span className="bg-green-100 text-green-600 px-2 py-1 rounded-full text-xs font-medium">
+                                FREE
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-sm text-gray-600">{selectedImageProvider.description}</div>
+                        </div>
+                      </div>
+                      <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${showImageProviderDropdown ? 'rotate-180' : ''}`} />
+                    </button>
+
+                    {/* Image Provider Dropdown Menu */}
+                    <AnimatePresence>
+                      {showImageProviderDropdown && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                          transition={{ duration: 0.2 }}
+                          className="absolute top-full left-0 right-0 z-20 mt-2 bg-white border border-gray-200 rounded-xl shadow-xl max-h-64 overflow-y-auto backdrop-blur-sm"
+                        >
+                          {imageProviderList.map((provider, index) => (
+                            <motion.button
+                              key={provider.id}
+                              type="button"
+                              onClick={() => handleImageProviderSelect(provider.id)}
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: index * 0.05 }}
+                              className={`w-full flex items-center gap-4 px-4 py-4 text-left transition-all duration-200 ${
+                                formKeys.selectedImageProvider === provider.id
+                                  ? 'bg-gradient-to-r from-green-50 to-blue-50 text-green-600 border-l-4 border-green-500'
+                                  : 'text-gray-900 hover:bg-gray-50'
+                              } ${index === 0 ? 'rounded-t-xl' : ''} ${index === imageProviderList.length - 1 ? 'rounded-b-xl' : ''}`}
+                            >
+                              <div className="text-2xl w-10 h-10 flex items-center justify-center bg-gray-100 rounded-lg">
+                                {provider.icon}
+                              </div>
+                              <div className="flex-1">
+                                <div className="font-semibold flex items-center gap-2">
+                                  {provider.name}
+                                  {provider.isFree && (
+                                    <span className="bg-green-100 text-green-600 px-2 py-1 rounded-full text-xs font-medium">
+                                      FREE
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="text-sm text-gray-500">{provider.description}</div>
+                              </div>
+                              {formKeys.selectedImageProvider === provider.id && (
+                                <div className="flex items-center gap-2">
+                                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                  <span className="text-xs font-medium text-green-600">Active</span>
+                                </div>
+                              )}
+                            </motion.button>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </div>
+
+                {/* Dynamic Image API Key Field */}
+                {selectedImageProvider.requiresApiKey && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="space-y-4 bg-white p-5 rounded-xl border border-gray-200 shadow-sm"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="text-lg">{selectedImageProvider.icon}</div>
+                        <label className="text-sm font-semibold text-gray-800">
+                          {selectedImageProvider.name} API Key
+                        </label>
+                      </div>
+                      {selectedImageProvider.getKeyUrl && (
+                        <a
+                          href={selectedImageProvider.getKeyUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-green-500 hover:text-green-600 text-sm flex items-center gap-1 font-medium transition-colors bg-green-50 px-3 py-1 rounded-lg hover:bg-green-100"
+                        >
+                          Get Key <ExternalLink className="w-3 h-3" />
+                        </a>
+                      )}
+                    </div>
+
+                    <div className="relative">
+                      <Key className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type={showApiKeys[`${selectedImageProvider.id}Key`] ? 'text' : 'password'}
+                        value={formKeys[`${selectedImageProvider.id}Key` as keyof ApiKeys] as string || ''}
+                        onChange={(e) => handleInputChange(`${selectedImageProvider.id}Key` as keyof ApiKeys, e.target.value)}
+                        placeholder={`Enter your ${selectedImageProvider.name} API key`}
+                        className="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all shadow-sm"
+                        data-testid={`${selectedImageProvider.id}-key-input`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => toggleKeyVisibility(`${selectedImageProvider.id}Key`)}
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                      >
+                        {showApiKeys[`${selectedImageProvider.id}Key`] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+
+                    <div className="bg-gradient-to-r from-green-50 to-blue-50 px-4 py-3 rounded-lg border border-green-100">
+                      <p className="text-sm text-gray-700">
+                        🌟 <strong>Mood-based images</strong> perfectly matched to your selected mood
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Legacy Unsplash Section (keeping for backward compatibility) */}
                 <div className="space-y-4 bg-gray-50 p-5 rounded-xl border border-gray-200">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
