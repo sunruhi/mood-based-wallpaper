@@ -331,48 +331,6 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
                   </motion.div>
                 )}
 
-                {/* Legacy Unsplash Section (keeping for backward compatibility) */}
-                <div className="space-y-4 bg-gray-50 p-5 rounded-xl border border-gray-200">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 bg-orange-500 rounded-md flex items-center justify-center">
-                        <span className="text-white text-xs font-bold">📷</span>
-                      </div>
-                      <label className="text-sm font-semibold text-gray-800">
-                        Unsplash Access Key
-                      </label>
-                    </div>
-                    <a
-                      href="https://unsplash.com/developers"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-500 hover:text-blue-600 text-sm flex items-center gap-1 font-medium transition-colors"
-                    >
-                      Get Key <ExternalLink className="w-3 h-3" />
-                    </a>
-                  </div>
-                  <div className="relative">
-                    <Key className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input
-                      type={showUnsplashKey ? 'text' : 'password'}
-                      value={formKeys.unsplashKey}
-                      onChange={(e) => handleInputChange('unsplashKey', e.target.value)}
-                      placeholder="Enter your Unsplash access key"
-                      className="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white shadow-sm transition-all"
-                      data-testid="unsplash-key-input"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowUnsplashKey(!showUnsplashKey)}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                    >
-                      {showUnsplashKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                  <p className="text-xs text-gray-600 bg-white px-3 py-2 rounded-lg">
-                    🌟 For high-quality, mood-specific images from professional photographers
-                  </p>
-                </div>
 
                 {/* AI Provider Selection */}
                 <div className="space-y-4 bg-gray-50 p-5 rounded-xl border border-gray-200">
