@@ -57,10 +57,6 @@ export const ImageDisplay: React.FC<ImageDisplayProps> = ({ image, quote, isLoad
         </motion.div>
       </div>
       
-      {/* Photo credit */}
-      <div className="absolute bottom-2 right-2 text-white text-xs bg-black bg-opacity-50 px-2 py-1 rounded">
-        Photo by {image.user.name}
-      </div>
     </motion.div>
   );
 };
