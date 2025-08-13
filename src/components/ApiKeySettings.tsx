@@ -117,6 +117,31 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
   const selectedImageProvider = getImageProviderConfig(formKeys.selectedImageProvider);
   const imageProviderList = getImageProviderList();
 
+  // Check if all required API keys are provided
+  const isValidConfiguration = () => {
+    // Check AI provider
+    if (formKeys.selectedAIProvider !== 'free') {
+      const keyField = `${formKeys.selectedAIProvider}Key` as keyof ApiKeys;
+      const apiKeyValue = formKeys[keyField] as string;
+      if (!apiKeyValue || !apiKeyValue.trim()) {
+        return false;
+      }
+    }
+
+    // Check image provider
+    if (selectedImageProvider.requiresApiKey) {
+      const keyField = `${formKeys.selectedImageProvider}Key` as keyof ApiKeys;
+      const apiKeyValue = formKeys[keyField] as string;
+      if (!apiKeyValue || !apiKeyValue.trim()) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  const canSave = isValidConfiguration();
+
   // Filter provider list based on current selection
   const getFilteredProviderList = () => {
     const allProviders = getProviderList();
