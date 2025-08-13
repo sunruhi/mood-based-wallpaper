@@ -37,7 +37,44 @@ export interface WallpaperData {
   mood: Mood;
 }
 
+export type AIProvider = 'free' | 'openai' | 'anthropic' | 'google' | 'azure';
+export type ImageProvider = 'picsum' | 'pixabay' | 'pexels' | 'unsplash';
+
+export interface AIProviderConfig {
+  id: AIProvider;
+  name: string;
+  description: string;
+  requiresApiKey: boolean;
+  getKeyUrl?: string;
+  icon?: string;
+}
+
+export interface ImageProviderConfig {
+  id: ImageProvider;
+  name: string;
+  description: string;
+  requiresApiKey: boolean;
+  getKeyUrl?: string;
+  icon?: string;
+  isFree: boolean;
+}
+
 export interface ApiKeys {
+  selectedImageProvider: ImageProvider;
   unsplashKey: string;
+  pixabayKey: string;
+  pexelsKey: string;
+  selectedAIProvider: AIProvider;
   openaiKey: string;
+  anthropicKey: string;
+  googleKey: string;
+  azureKey: string;
+  azureEndpoint: string;
+}
+
+export interface SavedWallpaper extends WallpaperData {
+  id: string;
+  createdAt: string;
+  title?: string;
+  isFavorite?: boolean;
 }

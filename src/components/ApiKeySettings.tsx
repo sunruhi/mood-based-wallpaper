@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings, Eye, EyeOff, Key, X, Save, ExternalLink } from 'lucide-react';
-import { ApiKeys } from '../types';
+import { Settings, Eye, EyeOff, Key, X, Save, ExternalLink, ChevronDown } from 'lucide-react';
+import { ApiKeys, AIProvider, ImageProvider } from '../types';
+import { AI_PROVIDERS, getProviderConfig, getProviderList } from '../config/aiProviders';
+import { IMAGE_PROVIDERS, getImageProviderConfig, getImageProviderList } from '../config/imageProviders';
 
 interface ApiKeySettingsProps {
   apiKeys: ApiKeys;
@@ -17,17 +19,131 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
   isOpen
 }) => {
   const [formKeys, setFormKeys] = useState<ApiKeys>(apiKeys);
-  const [showUnsplashKey, setShowUnsplashKey] = useState(false);
-  const [showOpenaiKey, setShowOpenaiKey] = useState(false);
+  const [showProviderDropdown, setShowProviderDropdown] = useState(false);
+  const [showImageProviderDropdown, setShowImageProviderDropdown] = useState(false);
+  const [showApiKeys, setShowApiKeys] = useState<Record<string, boolean>>({
+    openaiKey: false,
+    anthropicKey: false,
+    googleKey: false,
+    azureKey: false,
+    pixabayKey: false,
+    pexelsKey: false,
+    unsplashKey: false
+  });
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const imageDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowProviderDropdown(false);
+      }
+      if (imageDropdownRef.current && !imageDropdownRef.current.contains(event.target as Node)) {
+        setShowImageProviderDropdown(false);
+      }
+    };
+
+    if (showProviderDropdown || showImageProviderDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showProviderDropdown, showImageProviderDropdown]);
 
   const handleSave = () => {
+    // Validate that paid AI providers have API keys
+    if (formKeys.selectedAIProvider !== 'free') {
+      const keyField = `${formKeys.selectedAIProvider}Key` as keyof ApiKeys;
+      const apiKeyValue = formKeys[keyField] as string;
+
+      if (!apiKeyValue || !apiKeyValue.trim()) {
+        // Show error - don't save
+        alert(`Please enter your ${selectedProvider.name} API key before saving.`);
+        return;
+      }
+    }
+
+    // Validate that paid image providers have API keys (only when free AI is selected)
+    if (formKeys.selectedAIProvider === 'free' && selectedImageProvider.requiresApiKey) {
+      const keyField = `${formKeys.selectedImageProvider}Key` as keyof ApiKeys;
+      const apiKeyValue = formKeys[keyField] as string;
+
+      if (!apiKeyValue || !apiKeyValue.trim()) {
+        // Show error - don't save
+        alert(`Please enter your ${selectedImageProvider.name} API key before saving.`);
+        return;
+      }
+    }
+
     onSave(formKeys);
     onClose();
   };
 
   const handleInputChange = (field: keyof ApiKeys, value: string) => {
-    setFormKeys(prev => ({ ...prev, [field]: value }));
+    setFormKeys(prev => {
+      const updated = { ...prev, [field]: value };
+
+      // If user clears a paid AI provider's key, auto-switch to free
+      if (field.includes('Key') && field !== 'unsplashKey' && field !== 'pixabayKey' && field !== 'pexelsKey' && value.trim() === '') {
+        const providerField = field.replace('Key', '') as AIProvider;
+        if (updated.selectedAIProvider === providerField) {
+          updated.selectedAIProvider = 'free';
+        }
+      }
+
+      return updated;
+    });
   };
+
+  const handleProviderSelect = (providerId: AIProvider) => {
+    setFormKeys(prev => ({ ...prev, selectedAIProvider: providerId }));
+    setShowProviderDropdown(false);
+  };
+
+  const handleImageProviderSelect = (providerId: ImageProvider) => {
+    setFormKeys(prev => ({ ...prev, selectedImageProvider: providerId }));
+    setShowImageProviderDropdown(false);
+  };
+
+  const toggleKeyVisibility = (keyName: string) => {
+    setShowApiKeys(prev => ({ ...prev, [keyName]: !prev[keyName] }));
+  };
+
+  const selectedProvider = getProviderConfig(formKeys.selectedAIProvider);
+  const selectedImageProvider = getImageProviderConfig(formKeys.selectedImageProvider);
+  const imageProviderList = getImageProviderList();
+
+  // Check if all required API keys are provided
+  const isValidConfiguration = () => {
+    // Check AI provider
+    if (formKeys.selectedAIProvider !== 'free') {
+      const keyField = `${formKeys.selectedAIProvider}Key` as keyof ApiKeys;
+      const apiKeyValue = formKeys[keyField] as string;
+      if (!apiKeyValue || !apiKeyValue.trim()) {
+        return false;
+      }
+    }
+
+    // Check image provider (only when free AI is selected)
+    if (formKeys.selectedAIProvider === 'free' && selectedImageProvider.requiresApiKey) {
+      const keyField = `${formKeys.selectedImageProvider}Key` as keyof ApiKeys;
+      const apiKeyValue = formKeys[keyField] as string;
+      if (!apiKeyValue || !apiKeyValue.trim()) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  const canSave = isValidConfiguration();
+
+  // Always show all providers including free option for easy switching
+  const providerList = getProviderList();
 
   return (
     <AnimatePresence>
@@ -51,124 +167,375 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ type: "spring", damping: 20, stiffness: 300 }}
           >
-            <div className="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col backdrop-blur-sm border border-gray-100">
               {/* Header */}
-              <div className="flex items-center justify-between p-6 border-b border-gray-200">
-                <div className="flex items-center gap-3">
-                  <Settings className="w-6 h-6 text-blue-500" />
-                  <h2 className="text-xl font-bold text-gray-800">API Settings</h2>
+              <div className="relative bg-gradient-to-r from-blue-500 to-purple-600 p-6 rounded-t-2xl">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-white bg-opacity-20 rounded-lg backdrop-blur-sm">
+                      <Settings className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-bold text-white">API Settings</h2>
+                      <p className="text-sm text-white opacity-80">Configure your API preferences</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={onClose}
+                    className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-all duration-200 text-white"
+                    data-testid="close-settings"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
                 </div>
-                <button
-                  onClick={onClose}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                  data-testid="close-settings"
-                >
-                  <X className="w-5 h-5 text-gray-500" />
-                </button>
+                {/* Decorative elements */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full -translate-y-16 translate-x-16"></div>
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-5 rounded-full translate-y-12 -translate-x-12"></div>
               </div>
 
               {/* Content */}
-              <div className="p-6 space-y-6">
-                <div className="text-sm text-gray-600 bg-blue-50 p-4 rounded-lg">
-                  <p className="mb-2">
-                    <strong>Optional:</strong> Add your API keys for enhanced functionality.
-                    The app works with fallback content without keys.
-                  </p>
-                  <p>Your keys are stored locally and never sent to our servers.</p>
+              <div className="flex-1 p-6 space-y-6 overflow-y-auto">
+                <div className="relative bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-xl border border-blue-100">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm font-bold">ℹ</span>
+                    </div>
+                    <div className="text-sm">
+                      <p className="text-gray-700 mb-2 font-medium">
+                        <span className="text-blue-600 font-semibold">Optional:</span> Add your API keys for enhanced functionality.
+                        The app works with fallback content without keys.
+                      </p>
+                      <p className="text-gray-600">🔒 Your keys are stored locally and never sent to our servers.</p>
+                    </div>
+                  </div>
                 </div>
 
-                {/* Unsplash API Key */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Unsplash Access Key
+                {/* Image Provider Selection - Only show when Free AI is selected */}
+                {formKeys.selectedAIProvider === 'free' && (
+                  <>
+                    {/* Image Provider Selection */}
+                <div className="space-y-4 bg-gray-50 p-5 rounded-xl border border-gray-200">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 bg-green-500 rounded-md flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">🖼️</span>
+                    </div>
+                    <label className="text-sm font-semibold text-gray-800">
+                      Image Provider
                     </label>
-                    <a
-                      href="https://unsplash.com/developers"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-500 hover:text-blue-600 text-sm flex items-center gap-1"
-                    >
-                      Get Key <ExternalLink className="w-3 h-3" />
-                    </a>
                   </div>
-                  <div className="relative">
-                    <Key className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input
-                      type={showUnsplashKey ? 'text' : 'password'}
-                      value={formKeys.unsplashKey}
-                      onChange={(e) => handleInputChange('unsplashKey', e.target.value)}
-                      placeholder="Enter your Unsplash access key"
-                      className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      data-testid="unsplash-key-input"
-                    />
+
+                  {/* Image Provider Dropdown */}
+                  <div className="relative" ref={imageDropdownRef}>
                     <button
                       type="button"
-                      onClick={() => setShowUnsplashKey(!showUnsplashKey)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      onClick={() => setShowImageProviderDropdown(!showImageProviderDropdown)}
+                      className="w-full flex items-center justify-between px-4 py-4 bg-white border border-gray-300 rounded-xl hover:border-green-400 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all shadow-sm hover:shadow-md"
                     >
-                      {showUnsplashKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      <div className="flex items-center gap-3">
+                        <div className="text-2xl w-8 h-8 flex items-center justify-center bg-gray-100 rounded-lg">
+                          {selectedImageProvider.icon}
+                        </div>
+                        <div className="text-left">
+                          <div className="font-semibold text-gray-900 flex items-center gap-2">
+                            {selectedImageProvider.name}
+                            {selectedImageProvider.isFree && (
+                              <span className="bg-green-100 text-green-600 px-2 py-1 rounded-full text-xs font-medium">
+                                FREE
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-sm text-gray-600">{selectedImageProvider.description}</div>
+                        </div>
+                      </div>
+                      <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${showImageProviderDropdown ? 'rotate-180' : ''}`} />
                     </button>
+
+                    {/* Image Provider Dropdown Menu */}
+                    <AnimatePresence>
+                      {showImageProviderDropdown && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                          transition={{ duration: 0.2 }}
+                          className="absolute top-full left-0 right-0 z-20 mt-2 bg-white border border-gray-200 rounded-xl shadow-xl max-h-64 overflow-y-auto backdrop-blur-sm"
+                        >
+                          {imageProviderList.map((provider, index) => (
+                            <motion.button
+                              key={provider.id}
+                              type="button"
+                              onClick={() => handleImageProviderSelect(provider.id)}
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: index * 0.05 }}
+                              className={`w-full flex items-center gap-4 px-4 py-4 text-left transition-all duration-200 ${
+                                formKeys.selectedImageProvider === provider.id
+                                  ? 'bg-gradient-to-r from-green-50 to-blue-50 text-green-600 border-l-4 border-green-500'
+                                  : 'text-gray-900 hover:bg-gray-50'
+                              } ${index === 0 ? 'rounded-t-xl' : ''} ${index === imageProviderList.length - 1 ? 'rounded-b-xl' : ''}`}
+                            >
+                              <div className="text-2xl w-10 h-10 flex items-center justify-center bg-gray-100 rounded-lg">
+                                {provider.icon}
+                              </div>
+                              <div className="flex-1">
+                                <div className="font-semibold flex items-center gap-2">
+                                  {provider.name}
+                                  {provider.isFree && (
+                                    <span className="bg-green-100 text-green-600 px-2 py-1 rounded-full text-xs font-medium">
+                                      FREE
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="text-sm text-gray-500">{provider.description}</div>
+                              </div>
+                              {formKeys.selectedImageProvider === provider.id && (
+                                <div className="flex items-center gap-2">
+                                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                  <span className="text-xs font-medium text-green-600">Active</span>
+                                </div>
+                              )}
+                            </motion.button>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
-                  <p className="text-xs text-gray-500">
-                    For high-quality, mood-specific images
-                  </p>
                 </div>
 
-                {/* OpenAI API Key */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <label className="block text-sm font-medium text-gray-700">
-                      OpenAI API Key
+                {/* Dynamic Image API Key Field */}
+                {selectedImageProvider.requiresApiKey && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="space-y-4 bg-white p-5 rounded-xl border border-gray-200 shadow-sm"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="text-lg">{selectedImageProvider.icon}</div>
+                        <label className="text-sm font-semibold text-gray-800">
+                          {selectedImageProvider.name} API Key
+                        </label>
+                      </div>
+                      {selectedImageProvider.getKeyUrl && (
+                        <a
+                          href={selectedImageProvider.getKeyUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-green-500 hover:text-green-600 text-sm flex items-center gap-1 font-medium transition-colors bg-green-50 px-3 py-1 rounded-lg hover:bg-green-100"
+                        >
+                          Get Key <ExternalLink className="w-3 h-3" />
+                        </a>
+                      )}
+                    </div>
+
+                    <div className="relative">
+                      <Key className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type={showApiKeys[`${selectedImageProvider.id}Key`] ? 'text' : 'password'}
+                        value={formKeys[`${selectedImageProvider.id}Key` as keyof ApiKeys] as string || ''}
+                        onChange={(e) => handleInputChange(`${selectedImageProvider.id}Key` as keyof ApiKeys, e.target.value)}
+                        placeholder={`Enter your ${selectedImageProvider.name} API key`}
+                        className="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all shadow-sm"
+                        data-testid={`${selectedImageProvider.id}-key-input`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => toggleKeyVisibility(`${selectedImageProvider.id}Key`)}
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                      >
+                        {showApiKeys[`${selectedImageProvider.id}Key`] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+
+                    <div className="bg-gradient-to-r from-green-50 to-blue-50 px-4 py-3 rounded-lg border border-green-100">
+                      <p className="text-sm text-gray-700">
+                        🌟 <strong>Mood-based images</strong> perfectly matched to your selected mood
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+                  </>
+                )}
+
+                {/* AI Provider Selection */}
+                <div className="space-y-4 bg-gray-50 p-5 rounded-xl border border-gray-200">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 bg-purple-500 rounded-md flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">🤖</span>
+                    </div>
+                    <label className="text-sm font-semibold text-gray-800">
+                      AI Quote Provider
                     </label>
-                    <a
-                      href="https://platform.openai.com/api-keys"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-500 hover:text-blue-600 text-sm flex items-center gap-1"
-                    >
-                      Get Key <ExternalLink className="w-3 h-3" />
-                    </a>
                   </div>
-                  <div className="relative">
-                    <Key className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input
-                      type={showOpenaiKey ? 'text' : 'password'}
-                      value={formKeys.openaiKey}
-                      onChange={(e) => handleInputChange('openaiKey', e.target.value)}
-                      placeholder="Enter your OpenAI API key"
-                      className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      data-testid="openai-key-input"
-                    />
+
+                  {/* Provider Dropdown */}
+                  <div className="relative" ref={dropdownRef}>
                     <button
                       type="button"
-                      onClick={() => setShowOpenaiKey(!showOpenaiKey)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      onClick={() => setShowProviderDropdown(!showProviderDropdown)}
+                      className="w-full flex items-center justify-between px-4 py-4 bg-white border border-gray-300 rounded-xl hover:border-purple-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all shadow-sm hover:shadow-md"
                     >
-                      {showOpenaiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      <div className="flex items-center gap-3">
+                        <div className="text-2xl w-8 h-8 flex items-center justify-center bg-gray-100 rounded-lg">
+                          {selectedProvider.icon}
+                        </div>
+                        <div className="text-left">
+                          <div className="font-semibold text-gray-900">{selectedProvider.name}</div>
+                          <div className="text-sm text-gray-600">{selectedProvider.description}</div>
+                        </div>
+                      </div>
+                      <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${showProviderDropdown ? 'rotate-180' : ''}`} />
                     </button>
+
+                    {/* Dropdown Menu */}
+                    <AnimatePresence>
+                      {showProviderDropdown && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                          transition={{ duration: 0.2 }}
+                          className="absolute top-full left-0 right-0 z-20 mt-2 bg-white border border-gray-200 rounded-xl shadow-xl max-h-64 overflow-y-auto backdrop-blur-sm"
+                        >
+                          {providerList.map((provider, index) => (
+                            <motion.button
+                              key={provider.id}
+                              type="button"
+                              onClick={() => handleProviderSelect(provider.id)}
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: index * 0.05 }}
+                              className={`w-full flex items-center gap-4 px-4 py-4 text-left transition-all duration-200 ${
+                                formKeys.selectedAIProvider === provider.id
+                                  ? 'bg-gradient-to-r from-purple-50 to-blue-50 text-purple-600 border-l-4 border-purple-500'
+                                  : 'text-gray-900 hover:bg-gray-50'
+                              } ${index === 0 ? 'rounded-t-xl' : ''} ${index === providerList.length - 1 ? 'rounded-b-xl' : ''}`}
+                            >
+                              <div className="text-2xl w-10 h-10 flex items-center justify-center bg-gray-100 rounded-lg">
+                                {provider.icon}
+                              </div>
+                              <div className="flex-1">
+                                <div className="font-semibold">{provider.name}</div>
+                                <div className="text-sm text-gray-500">{provider.description}</div>
+                              </div>
+                              {formKeys.selectedAIProvider === provider.id && (
+                                <div className="flex items-center gap-2">
+                                  <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+                                  <span className="text-xs font-medium text-purple-600">Active</span>
+                                </div>
+                              )}
+                            </motion.button>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
-                  <p className="text-xs text-gray-500">
-                    For AI-generated personalized quotes
-                  </p>
                 </div>
+
+                {/* Dynamic API Key Field */}
+                {selectedProvider.requiresApiKey && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="space-y-4 bg-white p-5 rounded-xl border border-gray-200 shadow-sm"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="text-lg">{selectedProvider.icon}</div>
+                        <label className="text-sm font-semibold text-gray-800">
+                          {selectedProvider.name} API Key
+                        </label>
+                      </div>
+                      {selectedProvider.getKeyUrl && (
+                        <a
+                          href={selectedProvider.getKeyUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-purple-500 hover:text-purple-600 text-sm flex items-center gap-1 font-medium transition-colors bg-purple-50 px-3 py-1 rounded-lg hover:bg-purple-100"
+                        >
+                          Get Key <ExternalLink className="w-3 h-3" />
+                        </a>
+                      )}
+                    </div>
+
+                    {/* API Key Input */}
+                    <div className="relative">
+                      <Key className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type={showApiKeys[`${selectedProvider.id}Key`] ? 'text' : 'password'}
+                        value={formKeys[`${selectedProvider.id}Key` as keyof ApiKeys] as string || ''}
+                        onChange={(e) => handleInputChange(`${selectedProvider.id}Key` as keyof ApiKeys, e.target.value)}
+                        placeholder={`Enter your ${selectedProvider.name} API key`}
+                        className="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all shadow-sm"
+                        data-testid={`${selectedProvider.id}-key-input`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => toggleKeyVisibility(`${selectedProvider.id}Key`)}
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                      >
+                        {showApiKeys[`${selectedProvider.id}Key`] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+
+                    {/* Azure Endpoint Field (only for Azure) */}
+                    {selectedProvider.id === 'azure' && (
+                      <div className="relative">
+                        <Key className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <input
+                          type="text"
+                          value={formKeys.azureEndpoint || ''}
+                          onChange={(e) => handleInputChange('azureEndpoint', e.target.value)}
+                          placeholder="Enter your Azure OpenAI endpoint"
+                          className="w-full pl-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all shadow-sm"
+                          data-testid="azure-endpoint-input"
+                        />
+                      </div>
+                    )}
+
+                    <div className="bg-gradient-to-r from-purple-50 to-blue-50 px-4 py-3 rounded-lg border border-purple-100">
+                      <p className="text-sm text-gray-700">
+                        🎯 <strong>AI-generated personalized quotes</strong> tailored to your selected mood
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
               </div>
 
+              {/* Validation Warning */}
+              {!canSave && (
+                <div className="px-6 py-3 bg-amber-50 border-t border-amber-200">
+                  <div className="flex items-center gap-2 text-amber-700">
+                    <span className="text-sm">⚠️</span>
+                    <span className="text-sm font-medium">
+                      Please add API keys for selected paid providers before saving.
+                    </span>
+                  </div>
+                </div>
+              )}
+
               {/* Footer */}
-              <div className="flex gap-3 p-6 border-t border-gray-200">
+              <div className="flex-shrink-0 flex gap-4 p-6 bg-gray-50 border-t border-gray-200 rounded-b-2xl">
                 <button
                   onClick={onClose}
-                  className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                  className="flex-1 px-6 py-3 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-medium shadow-sm"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSave}
-                  className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
+                  disabled={!canSave}
+                  className={`flex-1 px-6 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 font-medium shadow-lg ${
+                    canSave
+                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 hover:shadow-xl transform hover:scale-105'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
                   data-testid="save-keys"
                 >
                   <Save className="w-4 h-4" />
-                  Save Keys
+                  {canSave ? 'Save Settings' : 'API Keys Required'}
                 </button>
               </div>
             </div>

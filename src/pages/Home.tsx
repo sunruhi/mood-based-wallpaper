@@ -1,27 +1,42 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Settings } from 'lucide-react';
+import { Settings, Clock } from 'lucide-react';
 import { MoodCard } from '../components/MoodCard';
 import { ImageDisplay } from '../components/ImageDisplay';
 import { DownloadButton } from '../components/DownloadButton';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { ApiKeySettings } from '../components/ApiKeySettings';
-import { useUnsplashAPI } from '../hooks/useUnsplashAPI';
+import { HistoryPanel } from '../components/HistoryPanel';
+import { useImageAPI } from '../hooks/useImageAPI';
 import { useOpenAI } from '../hooks/useOpenAI';
 import { useApiKeys } from '../hooks/useApiKeys';
+import { useWallpaperHistory } from '../hooks/useWallpaperHistory';
 import { MOODS } from '../config/moods';
-import { WallpaperData, Mood } from '../types';
+import { WallpaperData, Mood, SavedWallpaper } from '../types';
 
 export const Home: React.FC = () => {
   const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
   const [wallpaperData, setWallpaperData] = useState<WallpaperData | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  
-  const { apiKeys, saveApiKeys, hasUnsplashKey, hasOpenaiKey } = useApiKeys();
-  const { fetchImageByMood, loading: imageLoading, error: imageError } = useUnsplashAPI(apiKeys.unsplashKey);
-  const { generateQuote, loading: quoteLoading, error: quoteError } = useOpenAI(apiKeys.openaiKey);
+  const [showHistory, setShowHistory] = useState(false);
+
+  const { apiKeys, saveApiKeys, hasCurrentImageKey, hasCurrentAIKey, getCurrentAIKey, getCurrentImageKey, selectedAIProvider, selectedImageProvider } = useApiKeys();
+  const { fetchImageByMood, loading: imageLoading, error: imageError } = useImageAPI(selectedImageProvider, getCurrentImageKey());
+  const { generateQuote, loading: quoteLoading, error: quoteError } = useOpenAI(
+    getCurrentAIKey(),
+    selectedAIProvider,
+    apiKeys.azureEndpoint
+  );
+  const {
+    history,
+    saveWallpaper,
+    removeWallpaper,
+    clearHistory,
+    toggleFavorite,
+    totalCount
+  } = useWallpaperHistory();
 
   const handleMoodSelect = async (moodId: string) => {
     const mood = moodId as Mood;
@@ -37,11 +52,17 @@ export const Home: React.FC = () => {
       ]);
 
       if (image && quote) {
-        setWallpaperData({
+        const newWallpaperData = {
           image,
           quote,
           mood
-        });
+        };
+        setWallpaperData(newWallpaperData);
+
+        // Auto-save to history only if no errors occurred
+        if (!imageError && !quoteError) {
+          saveWallpaper(newWallpaperData);
+        }
       }
     } catch (error) {
       console.error('Error generating wallpaper:', error);
@@ -56,19 +77,44 @@ export const Home: React.FC = () => {
     }
   };
 
+  const handleRestoreWallpaper = (savedWallpaper: SavedWallpaper) => {
+    setWallpaperData({
+      image: savedWallpaper.image,
+      quote: savedWallpaper.quote,
+      mood: savedWallpaper.mood
+    });
+    setSelectedMood(savedWallpaper.mood);
+    setShowHistory(false);
+  };
+
   const isLoading = isGenerating || imageLoading || quoteLoading;
   const error = imageError || quoteError;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-500 to-red-500">
       <div className="container mx-auto px-4 py-8">
-        {/* Settings Button */}
+        {/* Action Buttons */}
         <motion.div
-          className="fixed top-4 right-4 z-30"
+          className="fixed top-4 right-4 z-30 flex gap-3"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.5 }}
         >
+          {/* History Button */}
+          <button
+            onClick={() => setShowHistory(true)}
+            className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-opacity-30 transition-all duration-200 shadow-lg relative"
+            data-testid="history-button"
+          >
+            <Clock className="w-5 h-5" />
+            {totalCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {totalCount > 9 ? '9+' : totalCount}
+              </span>
+            )}
+          </button>
+
+          {/* Settings Button */}
           <button
             onClick={() => setShowSettings(true)}
             className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-opacity-30 transition-all duration-200 shadow-lg"
@@ -91,7 +137,7 @@ export const Home: React.FC = () => {
           <p className="text-xl text-white opacity-90">
             Select your mood and get a personalized wallpaper with an inspiring quote
           </p>
-          {(!hasUnsplashKey || !hasOpenaiKey) && (
+          {((selectedImageProvider !== 'picsum' && !hasCurrentImageKey) || (selectedAIProvider !== 'free' && !hasCurrentAIKey)) && (
             <motion.div
               className="mt-4 text-sm text-white opacity-80"
               initial={{ opacity: 0, y: 10 }}
@@ -99,7 +145,9 @@ export const Home: React.FC = () => {
               transition={{ delay: 0.8 }}
             >
               <p>
-                Using fallback content. Click the settings icon to add API keys for enhanced functionality.
+                {selectedAIProvider === 'free' && selectedImageProvider === 'picsum'
+                  ? 'Using Free providers. Upgrade to premium providers for enhanced quality and variety.'
+                  : 'Add API keys in settings for enhanced functionality and better quality content.'}
               </p>
             </motion.div>
           )}
@@ -135,7 +183,7 @@ export const Home: React.FC = () => {
             />
           )}
 
-          {wallpaperData && !isLoading && (
+          {wallpaperData && !isLoading && !error && (
             <motion.div
               className="space-y-6"
               initial={{ opacity: 0 }}
@@ -175,6 +223,17 @@ export const Home: React.FC = () => {
         onSave={saveApiKeys}
         onClose={() => setShowSettings(false)}
         isOpen={showSettings}
+      />
+
+      {/* History Panel */}
+      <HistoryPanel
+        isOpen={showHistory}
+        onClose={() => setShowHistory(false)}
+        history={history}
+        onRestoreWallpaper={handleRestoreWallpaper}
+        onRemoveWallpaper={removeWallpaper}
+        onToggleFavorite={toggleFavorite}
+        onClearHistory={clearHistory}
       />
     </div>
   );

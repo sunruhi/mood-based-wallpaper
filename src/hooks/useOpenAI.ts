@@ -1,15 +1,20 @@
 import { useState } from 'react';
-import { GeneratedQuote, Mood } from '../types';
+import { GeneratedQuote, Mood, AIProvider } from '../types';
 
-export const useOpenAI = (apiKey?: string) => {
+export const useOpenAI = (apiKey?: string, provider: AIProvider = 'free', azureEndpoint?: string) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const generateQuote = async (mood: Mood): Promise<GeneratedQuote | null> => {
-    const openaiKey = apiKey || import.meta.env.VITE_OPENAI_API_KEY;
-    
-    if (!openaiKey) {
-      // Fallback to predefined quotes if OpenAI API key is not available
+    // For free provider, always use fallback quotes
+    if (provider === 'free') {
+      return getFallbackQuote(mood);
+    }
+
+    const currentApiKey = apiKey || import.meta.env.VITE_OPENAI_API_KEY;
+
+    if (!currentApiKey) {
+      // Fallback to predefined quotes if API key is not available
       return getFallbackQuote(mood);
     }
 
@@ -23,31 +28,84 @@ export const useOpenAI = (apiKey?: string) => {
         motivated: "Generate a short, inspiring quote about achievement, success, or motivation. Keep it under 50 words."
       };
 
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      let endpoint = '';
+      let headers: HeadersInit = { 'Content-Type': 'application/json' };
+      let body: any = {};
+
+      switch (provider) {
+        case 'openai':
+          endpoint = 'https://api.openai.com/v1/chat/completions';
+          headers.Authorization = `Bearer ${currentApiKey}`;
+          body = {
+            model: 'gpt-3.5-turbo',
+            messages: [{ role: 'user', content: moodPrompts[mood] }],
+            max_tokens: 100,
+            temperature: 0.8,
+          };
+          break;
+
+        case 'anthropic':
+          endpoint = 'https://api.anthropic.com/v1/messages';
+          headers['x-api-key'] = currentApiKey;
+          headers['anthropic-version'] = '2023-06-01';
+          body = {
+            model: 'claude-3-haiku-20240307',
+            max_tokens: 100,
+            messages: [{ role: 'user', content: moodPrompts[mood] }],
+          };
+          break;
+
+        case 'google':
+          endpoint = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${currentApiKey}`;
+          body = {
+            contents: [{ parts: [{ text: moodPrompts[mood] }] }],
+            generationConfig: { maxOutputTokens: 100, temperature: 0.8 }
+          };
+          break;
+
+        case 'azure':
+          if (!azureEndpoint) {
+            throw new Error('Azure endpoint is required');
+          }
+          endpoint = `${azureEndpoint}/openai/deployments/gpt-35-turbo/chat/completions?api-version=2023-05-15`;
+          headers['api-key'] = currentApiKey;
+          body = {
+            messages: [{ role: 'user', content: moodPrompts[mood] }],
+            max_tokens: 100,
+            temperature: 0.8,
+          };
+          break;
+
+        default:
+          throw new Error(`Unsupported provider: ${provider}`);
+      }
+
+      const response = await fetch(endpoint, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${openaiKey}`,
-        },
-        body: JSON.stringify({
-          model: 'gpt-3.5-turbo',
-          messages: [
-            {
-              role: 'user',
-              content: moodPrompts[mood]
-            }
-          ],
-          max_tokens: 100,
-          temperature: 0.8,
-        }),
+        headers,
+        body: JSON.stringify(body),
       });
 
       if (!response.ok) {
-        throw new Error(`OpenAI API error: ${response.status}`);
+        throw new Error(`${provider} API error: ${response.status}`);
       }
 
       const data = await response.json();
-      const quoteText = data.choices[0]?.message?.content?.trim();
+      let quoteText = '';
+
+      // Parse response based on provider
+      switch (provider) {
+        case 'openai':
+        case 'azure':
+          quoteText = data.choices[0]?.message?.content?.trim();
+          break;
+        case 'anthropic':
+          quoteText = data.content[0]?.text?.trim();
+          break;
+        case 'google':
+          quoteText = data.candidates[0]?.content?.parts[0]?.text?.trim();
+          break;
+      }
 
       if (!quoteText) {
         throw new Error('No quote generated');
@@ -60,6 +118,9 @@ export const useOpenAI = (apiKey?: string) => {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to generate quote';
       setError(errorMessage);
+
+      // If there's an API error and we're not using free provider,
+      // return fallback but keep the error state
       return getFallbackQuote(mood);
     } finally {
       setLoading(false);
