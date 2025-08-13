@@ -116,7 +116,7 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
               </div>
 
               {/* Content */}
-              <div className="p-6 space-y-6 max-h-[calc(95vh-140px)] overflow-y-auto">
+              <div className="flex-1 p-6 space-y-6 overflow-y-auto">
                 <div className="relative bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-xl border border-blue-100">
                   <div className="flex items-start gap-3">
                     <div className="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
