@@ -36,6 +36,18 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
     setFormKeys(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleProviderSelect = (providerId: AIProvider) => {
+    setFormKeys(prev => ({ ...prev, selectedAIProvider: providerId }));
+    setShowProviderDropdown(false);
+  };
+
+  const toggleKeyVisibility = (keyName: string) => {
+    setShowApiKeys(prev => ({ ...prev, [keyName]: !prev[keyName] }));
+  };
+
+  const selectedProvider = getProviderConfig(formKeys.selectedAIProvider);
+  const providerList = getProviderList();
+
   return (
     <AnimatePresence>
       {isOpen && (
