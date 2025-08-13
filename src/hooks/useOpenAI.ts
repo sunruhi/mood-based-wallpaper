@@ -56,7 +56,7 @@ export const useOpenAI = (apiKey?: string, provider: AIProvider = 'free', azureE
           break;
 
         case 'google':
-          endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${currentApiKey}`;
+          endpoint = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${currentApiKey}`;
           body = {
             contents: [{ parts: [{ text: moodPrompts[mood] }] }],
             generationConfig: { maxOutputTokens: 100, temperature: 0.8 }
