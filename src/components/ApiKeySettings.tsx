@@ -134,43 +134,122 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
                   </p>
                 </div>
 
-                {/* OpenAI API Key */}
+                {/* AI Provider Selection */}
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <label className="block text-sm font-medium text-gray-700">
-                      OpenAI API Key
-                    </label>
-                    <a
-                      href="https://platform.openai.com/api-keys"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-500 hover:text-blue-600 text-sm flex items-center gap-1"
-                    >
-                      Get Key <ExternalLink className="w-3 h-3" />
-                    </a>
-                  </div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    AI Quote Provider
+                  </label>
+
+                  {/* Provider Dropdown */}
                   <div className="relative">
-                    <Key className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input
-                      type={showOpenaiKey ? 'text' : 'password'}
-                      value={formKeys.openaiKey}
-                      onChange={(e) => handleInputChange('openaiKey', e.target.value)}
-                      placeholder="Enter your OpenAI API key"
-                      className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      data-testid="openai-key-input"
-                    />
                     <button
                       type="button"
-                      onClick={() => setShowOpenaiKey(!showOpenaiKey)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      onClick={() => setShowProviderDropdown(!showProviderDropdown)}
+                      className="w-full flex items-center justify-between px-4 py-3 bg-white border border-gray-300 rounded-lg hover:border-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                     >
-                      {showOpenaiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      <div className="flex items-center gap-3">
+                        <span className="text-lg">{selectedProvider.icon}</span>
+                        <div className="text-left">
+                          <div className="font-medium text-gray-900">{selectedProvider.name}</div>
+                          <div className="text-sm text-gray-500">{selectedProvider.description}</div>
+                        </div>
+                      </div>
+                      <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${showProviderDropdown ? 'rotate-180' : ''}`} />
                     </button>
+
+                    {/* Dropdown Menu */}
+                    <AnimatePresence>
+                      {showProviderDropdown && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          className="absolute top-full left-0 right-0 z-10 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto"
+                        >
+                          {providerList.map((provider) => (
+                            <button
+                              key={provider.id}
+                              type="button"
+                              onClick={() => handleProviderSelect(provider.id)}
+                              className={`w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 ${
+                                formKeys.selectedAIProvider === provider.id ? 'bg-blue-50 text-blue-600' : 'text-gray-900'
+                              }`}
+                            >
+                              <span className="text-lg">{provider.icon}</span>
+                              <div>
+                                <div className="font-medium">{provider.name}</div>
+                                <div className="text-sm text-gray-500">{provider.description}</div>
+                              </div>
+                              {formKeys.selectedAIProvider === provider.id && (
+                                <div className="ml-auto w-2 h-2 bg-blue-500 rounded-full"></div>
+                              )}
+                            </button>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
-                  <p className="text-xs text-gray-500">
-                    For AI-generated personalized quotes
-                  </p>
                 </div>
+
+                {/* Dynamic API Key Field */}
+                {selectedProvider.requiresApiKey && (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <label className="block text-sm font-medium text-gray-700">
+                        {selectedProvider.name} API Key
+                      </label>
+                      {selectedProvider.getKeyUrl && (
+                        <a
+                          href={selectedProvider.getKeyUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 hover:text-blue-600 text-sm flex items-center gap-1"
+                        >
+                          Get Key <ExternalLink className="w-3 h-3" />
+                        </a>
+                      )}
+                    </div>
+
+                    {/* API Key Input */}
+                    <div className="relative">
+                      <Key className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type={showApiKeys[`${selectedProvider.id}Key`] ? 'text' : 'password'}
+                        value={formKeys[`${selectedProvider.id}Key` as keyof ApiKeys] as string || ''}
+                        onChange={(e) => handleInputChange(`${selectedProvider.id}Key` as keyof ApiKeys, e.target.value)}
+                        placeholder={`Enter your ${selectedProvider.name} API key`}
+                        className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        data-testid={`${selectedProvider.id}-key-input`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => toggleKeyVisibility(`${selectedProvider.id}Key`)}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      >
+                        {showApiKeys[`${selectedProvider.id}Key`] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+
+                    {/* Azure Endpoint Field (only for Azure) */}
+                    {selectedProvider.id === 'azure' && (
+                      <div className="relative">
+                        <Key className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <input
+                          type="text"
+                          value={formKeys.azureEndpoint || ''}
+                          onChange={(e) => handleInputChange('azureEndpoint', e.target.value)}
+                          placeholder="Enter your Azure OpenAI endpoint"
+                          className="w-full pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          data-testid="azure-endpoint-input"
+                        />
+                      </div>
+                    )}
+
+                    <p className="text-xs text-gray-500">
+                      For AI-generated personalized quotes
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Footer */}
