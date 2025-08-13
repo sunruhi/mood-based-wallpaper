@@ -59,8 +59,10 @@ export const Home: React.FC = () => {
         };
         setWallpaperData(newWallpaperData);
 
-        // Auto-save to history
-        saveWallpaper(newWallpaperData);
+        // Auto-save to history only if no errors occurred
+        if (!imageError && !quoteError) {
+          saveWallpaper(newWallpaperData);
+        }
       }
     } catch (error) {
       console.error('Error generating wallpaper:', error);
