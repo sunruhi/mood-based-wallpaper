@@ -19,7 +19,13 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
 }) => {
   const [formKeys, setFormKeys] = useState<ApiKeys>(apiKeys);
   const [showUnsplashKey, setShowUnsplashKey] = useState(false);
-  const [showOpenaiKey, setShowOpenaiKey] = useState(false);
+  const [showProviderDropdown, setShowProviderDropdown] = useState(false);
+  const [showApiKeys, setShowApiKeys] = useState<Record<string, boolean>>({
+    openaiKey: false,
+    anthropicKey: false,
+    googleKey: false,
+    azureKey: false
+  });
 
   const handleSave = () => {
     onSave(formKeys);
