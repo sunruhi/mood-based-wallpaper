@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Settings } from 'lucide-react';
+import { Settings, Clock } from 'lucide-react';
 import { MoodCard } from '../components/MoodCard';
 import { ImageDisplay } from '../components/ImageDisplay';
 import { DownloadButton } from '../components/DownloadButton';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { ApiKeySettings } from '../components/ApiKeySettings';
+import { HistoryPanel } from '../components/HistoryPanel';
 import { useUnsplashAPI } from '../hooks/useUnsplashAPI';
 import { useOpenAI } from '../hooks/useOpenAI';
 import { useApiKeys } from '../hooks/useApiKeys';
+import { useWallpaperHistory } from '../hooks/useWallpaperHistory';
 import { MOODS } from '../config/moods';
-import { WallpaperData, Mood } from '../types';
+import { WallpaperData, Mood, SavedWallpaper } from '../types';
 
 export const Home: React.FC = () => {
   const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
