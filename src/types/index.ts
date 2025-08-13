@@ -60,7 +60,10 @@ export interface ImageProviderConfig {
 }
 
 export interface ApiKeys {
+  selectedImageProvider: ImageProvider;
   unsplashKey: string;
+  pixabayKey: string;
+  pexelsKey: string;
   selectedAIProvider: AIProvider;
   openaiKey: string;
   anthropicKey: string;
