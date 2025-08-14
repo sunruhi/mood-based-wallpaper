@@ -19,6 +19,7 @@ import { MOODS } from '../config/moods';
 import { AI_PROVIDERS } from '../config/aiProviders';
 import { IMAGE_PROVIDERS } from '../config/imageProviders';
 import { DEFAULT_THEME } from '../config/themes';
+import { logClipboardCapabilities } from '../utils/clipboardTest';
 import { WallpaperData, Mood, SavedWallpaper } from '../types';
 
 export const Home: React.FC = () => {
