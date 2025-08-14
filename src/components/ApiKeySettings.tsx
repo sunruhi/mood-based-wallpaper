@@ -34,6 +34,11 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const imageDropdownRef = useRef<HTMLDivElement>(null);
 
+  // Update form keys when modal opens or apiKeys change
+  useEffect(() => {
+    setFormKeys(apiKeys);
+  }, [apiKeys, isOpen]);
+
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
