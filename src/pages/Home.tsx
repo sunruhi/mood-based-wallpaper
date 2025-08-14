@@ -95,6 +95,18 @@ export const Home: React.FC = () => {
     setShowHistory(false);
   };
 
+  const handleCustomQuoteSave = (text: string, author?: string) => {
+    setCustomQuote({ text, author });
+    if (selectedMood) {
+      handleMoodSelect(selectedMood);
+    }
+  };
+
+  const handleCustomQuoteGenerate = (moodId: string) => {
+    setShowCustomQuote(true);
+    setSelectedMood(moodId as Mood);
+  };
+
   const isLoading = isGenerating || imageLoading || quoteLoading;
   const error = imageError || quoteError;
 
