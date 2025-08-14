@@ -15,7 +15,9 @@ const getDefaultApiKeys = (): ApiKeys => ({
   anthropicKey: '',
   googleKey: '',
   azureKey: '',
-  azureEndpoint: ''
+  azureEndpoint: '',
+  metaKey: '',
+  groqKey: ''
 });
 
 export const useApiKeys = () => {
