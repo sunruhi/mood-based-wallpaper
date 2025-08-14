@@ -147,6 +147,16 @@ export const Home: React.FC = () => {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.5 }}
         >
+          {/* Theme Button */}
+          <button
+            onClick={() => setShowThemeSelector(true)}
+            className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-opacity-30 transition-all duration-200 shadow-lg"
+            data-testid="theme-button"
+            title="Choose Theme"
+          >
+            <Palette className="w-5 h-5" />
+          </button>
+
           {/* Custom Quote Button */}
           <button
             onClick={() => setShowCustomQuote(true)}
