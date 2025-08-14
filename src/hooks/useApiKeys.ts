@@ -62,6 +62,10 @@ export const useApiKeys = () => {
         return apiKeys.googleKey;
       case 'azure':
         return apiKeys.azureKey;
+      case 'meta':
+        return apiKeys.metaKey;
+      case 'groq':
+        return apiKeys.groqKey;
       case 'free':
       default:
         return '';
