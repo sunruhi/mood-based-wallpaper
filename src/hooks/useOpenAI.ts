@@ -26,7 +26,13 @@ export const useOpenAI = (apiKey?: string, provider: AIProvider = 'free', azureE
       const moodPrompts = {
         happy: "Generate a short, uplifting quote about happiness, joy, or positivity. Keep it under 50 words.",
         sad: "Generate a short, comforting quote about finding peace in difficult times or gentle reflection. Keep it under 50 words.",
-        motivated: "Generate a short, inspiring quote about achievement, success, or motivation. Keep it under 50 words."
+        motivated: "Generate a short, inspiring quote about achievement, success, or motivation. Keep it under 50 words.",
+        peaceful: "Generate a short, serene quote about peace, tranquility, or mindfulness. Keep it under 50 words.",
+        energetic: "Generate a short, dynamic quote about energy, vitality, or taking action. Keep it under 50 words.",
+        romantic: "Generate a short, heartfelt quote about love, romance, or connection. Keep it under 50 words.",
+        mysterious: "Generate a short, intriguing quote about mystery, wonder, or the unknown. Keep it under 50 words.",
+        adventure: "Generate a short, exciting quote about adventure, exploration, or discovering new horizons. Keep it under 50 words.",
+        creative: "Generate a short, inspiring quote about creativity, imagination, or artistic expression. Keep it under 50 words."
       };
 
       let endpoint = '';
