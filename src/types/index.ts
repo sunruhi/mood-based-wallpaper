@@ -1,4 +1,4 @@
-export type Mood = 'happy' | 'sad' | 'motivated';
+export type Mood = 'happy' | 'sad' | 'motivated' | 'peaceful' | 'energetic' | 'romantic' | 'mysterious' | 'adventure' | 'creative';
 
 export interface MoodConfig {
   id: Mood;
