@@ -154,6 +154,36 @@ export const useOpenAI = (apiKey?: string, provider: AIProvider = 'free', azureE
         { text: "The future belongs to those who believe in the beauty of their dreams.", author: "Eleanor Roosevelt" },
         { text: "Success is not final, failure is not fatal: it is the courage to continue that counts.", author: "Winston Churchill" },
         { text: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" }
+      ],
+      peaceful: [
+        { text: "Peace cannot be kept by force; it can only be achieved by understanding.", author: "Albert Einstein" },
+        { text: "In the midst of winter, I found there was, within me, an invincible summer.", author: "Albert Camus" },
+        { text: "Peace comes from within. Do not seek it without.", author: "Buddha" }
+      ],
+      energetic: [
+        { text: "Energy and persistence conquer all things.", author: "Benjamin Franklin" },
+        { text: "The way to get started is to quit talking and begin doing.", author: "Walt Disney" },
+        { text: "Act as if what you do makes a difference. It does.", author: "William James" }
+      ],
+      romantic: [
+        { text: "Being deeply loved by someone gives you strength, while loving someone deeply gives you courage.", author: "Lao Tzu" },
+        { text: "Love is not about how many days, months, or years you have been together. It's about how much you love each other every day.", author: "Unknown" },
+        { text: "The best thing to hold onto in life is each other.", author: "Audrey Hepburn" }
+      ],
+      mysterious: [
+        { text: "The most beautiful thing we can experience is the mysterious.", author: "Albert Einstein" },
+        { text: "Mystery creates wonder and wonder is the basis of man's desire to understand.", author: "Neil Armstrong" },
+        { text: "In the depths of winter, I finally learned that within me there lay an invincible summer.", author: "Albert Camus" }
+      ],
+      adventure: [
+        { text: "Adventure is not outside man; it is within.", author: "George Eliot" },
+        { text: "Life is either a daring adventure or nothing at all.", author: "Helen Keller" },
+        { text: "The biggest adventure you can take is to live the life of your dreams.", author: "Oprah Winfrey" }
+      ],
+      creative: [
+        { text: "Creativity takes courage.", author: "Henri Matisse" },
+        { text: "The creative adult is the child who survived.", author: "Ursula K. Le Guin" },
+        { text: "Imagination is more important than knowledge.", author: "Albert Einstein" }
       ]
     };
 
