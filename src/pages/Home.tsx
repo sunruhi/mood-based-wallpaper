@@ -338,13 +338,9 @@ export const Home: React.FC = () => {
                 themeId={selectedTheme}
               />
               
-              <div className="flex justify-center gap-4">
+              <div className="flex justify-center">
                 <DownloadButton
                   mood={wallpaperData.mood}
-                  disabled={isLoading}
-                />
-                <ShareButton
-                  wallpaperData={wallpaperData}
                   disabled={isLoading}
                 />
               </div>
