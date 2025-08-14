@@ -26,6 +26,8 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
     anthropicKey: false,
     googleKey: false,
     azureKey: false,
+    metaKey: false,
+    groqKey: false,
     pixabayKey: false,
     pexelsKey: false,
     unsplashKey: false

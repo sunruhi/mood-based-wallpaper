@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Settings, Clock } from 'lucide-react';
+import { Settings, Clock, Type, Palette } from 'lucide-react';
 import { MoodCard } from '../components/MoodCard';
 import { ImageDisplay } from '../components/ImageDisplay';
 import { DownloadButton } from '../components/DownloadButton';
@@ -8,6 +8,8 @@ import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { ApiKeySettings } from '../components/ApiKeySettings';
 import { HistoryPanel } from '../components/HistoryPanel';
+import { CustomQuoteInput } from '../components/CustomQuoteInput';
+import { ThemeSelector } from '../components/ThemeSelector';
 import { useImageAPI } from '../hooks/useImageAPI';
 import { useOpenAI } from '../hooks/useOpenAI';
 import { useApiKeys } from '../hooks/useApiKeys';
@@ -15,6 +17,8 @@ import { useWallpaperHistory } from '../hooks/useWallpaperHistory';
 import { MOODS } from '../config/moods';
 import { AI_PROVIDERS } from '../config/aiProviders';
 import { IMAGE_PROVIDERS } from '../config/imageProviders';
+import { DEFAULT_THEME } from '../config/themes';
+import { logClipboardCapabilities } from '../utils/clipboardTest';
 import { WallpaperData, Mood, SavedWallpaper } from '../types';
 
 export const Home: React.FC = () => {
@@ -23,6 +27,10 @@ export const Home: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [showCustomQuote, setShowCustomQuote] = useState(false);
+  const [showThemeSelector, setShowThemeSelector] = useState(false);
+  const [customQuote, setCustomQuote] = useState<{text: string; author?: string} | null>(null);
+  const [selectedTheme, setSelectedTheme] = useState(DEFAULT_THEME);
 
   const { apiKeys, saveApiKeys, hasCurrentImageKey, hasCurrentAIKey, getCurrentAIKey, getCurrentImageKey, selectedAIProvider, selectedImageProvider } = useApiKeys();
   const { fetchImageByMood, loading: imageLoading, error: imageError } = useImageAPI(selectedImageProvider, getCurrentImageKey());
@@ -40,6 +48,33 @@ export const Home: React.FC = () => {
     totalCount
   } = useWallpaperHistory();
 
+  // Handle shared wallpaper from URL parameters
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const mood = urlParams.get('mood') as Mood;
+    const quote = urlParams.get('quote');
+    const author = urlParams.get('author');
+    const imageId = urlParams.get('image');
+
+    if (mood && quote && Object.keys(MOODS).includes(mood)) {
+      setCustomQuote({ text: quote, author: author || undefined });
+      setSelectedMood(mood);
+
+      // Clear URL parameters after processing
+      if (window.history.replaceState) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      // Generate wallpaper with shared parameters
+      handleMoodSelect(mood);
+    }
+
+    // Log clipboard capabilities in development
+    if (import.meta.env.DEV) {
+      logClipboardCapabilities();
+    }
+  }, []);
+
   const handleMoodSelect = async (moodId: string) => {
     const mood = moodId as Mood;
     setSelectedMood(mood);
@@ -50,7 +85,7 @@ export const Home: React.FC = () => {
       // Generate image and quote in parallel
       const [image, quote] = await Promise.all([
         fetchImageByMood(mood),
-        generateQuote(mood)
+        customQuote ? Promise.resolve(customQuote) : generateQuote(mood)
       ]);
 
       // Always ensure we have content, even if APIs failed
@@ -92,6 +127,18 @@ export const Home: React.FC = () => {
     setShowHistory(false);
   };
 
+  const handleCustomQuoteSave = (text: string, author?: string) => {
+    setCustomQuote({ text, author });
+    if (selectedMood) {
+      handleMoodSelect(selectedMood);
+    }
+  };
+
+  const handleCustomQuoteGenerate = (moodId: string) => {
+    setShowCustomQuote(true);
+    setSelectedMood(moodId as Mood);
+  };
+
   const isLoading = isGenerating || imageLoading || quoteLoading;
   const error = imageError || quoteError;
 
@@ -105,6 +152,31 @@ export const Home: React.FC = () => {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.5 }}
         >
+          {/* Theme Button */}
+          <button
+            onClick={() => setShowThemeSelector(true)}
+            className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-opacity-30 transition-all duration-200 shadow-lg"
+            data-testid="theme-button"
+            title="Choose Theme"
+          >
+            <Palette className="w-5 h-5" />
+          </button>
+
+          {/* Custom Quote Button */}
+          <button
+            onClick={() => setShowCustomQuote(true)}
+            className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-opacity-30 transition-all duration-200 shadow-lg"
+            data-testid="custom-quote-button"
+            title="Add Custom Quote"
+          >
+            <Type className="w-5 h-5" />
+            {customQuote && (
+              <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                ✓
+              </span>
+            )}
+          </button>
+
           {/* History Button */}
           <button
             onClick={() => setShowHistory(true)}
@@ -145,23 +217,36 @@ export const Home: React.FC = () => {
 
           {/* AI Provider Badge */}
           <motion.div
-            className="mt-4 flex items-center justify-center"
+            className="mt-4 flex items-center justify-center gap-3"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
           >
             <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-2">
-              <span className="text-lg">{AI_PROVIDERS[selectedAIProvider].icon}</span>
-              {selectedImageProvider !== 'picsum' && (
-                <span className="text-lg">{IMAGE_PROVIDERS[selectedImageProvider].icon}</span>
+              <span className="text-lg">{AI_PROVIDERS[selectedAIProvider]?.icon || '🤖'}</span>
+              {(selectedAIProvider === 'free' && selectedImageProvider !== 'picsum') && (
+                <span className="text-lg">{IMAGE_PROVIDERS[selectedImageProvider]?.icon || '🖼️'}</span>
               )}
               <span className="text-white text-sm font-medium">
-                Powered by {AI_PROVIDERS[selectedAIProvider].name}
-                {selectedImageProvider !== 'picsum' && (
-                  <span> + {IMAGE_PROVIDERS[selectedImageProvider].name}</span>
+                Powered by {AI_PROVIDERS[selectedAIProvider]?.name || 'AI'}
+                {(selectedAIProvider === 'free' && selectedImageProvider !== 'picsum') && (
+                  <span> + {IMAGE_PROVIDERS[selectedImageProvider]?.name || 'Images'}</span>
                 )}
               </span>
             </div>
+
+            {customQuote && (
+              <div className="bg-green-500 bg-opacity-90 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-2">
+                <Type className="w-4 h-4 text-white" />
+                <span className="text-white text-xs font-medium">Custom Quote Active</span>
+                <button
+                  onClick={() => setCustomQuote(null)}
+                  className="text-white hover:text-gray-200 text-xs ml-1"
+                >
+                  ×
+                </button>
+              </div>
+            )}
           </motion.div>
 
           {((selectedImageProvider !== 'picsum' && !hasCurrentImageKey) || (selectedAIProvider !== 'free' && !hasCurrentAIKey)) && (
@@ -195,7 +280,7 @@ export const Home: React.FC = () => {
 
         {/* Mood Selection */}
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 max-w-4xl mx-auto"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-12 max-w-7xl mx-auto"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
@@ -250,6 +335,7 @@ export const Home: React.FC = () => {
               <ImageDisplay
                 image={wallpaperData.image}
                 quote={wallpaperData.quote}
+                themeId={selectedTheme}
               />
               
               <div className="flex justify-center">
@@ -291,6 +377,21 @@ export const Home: React.FC = () => {
         onRemoveWallpaper={removeWallpaper}
         onToggleFavorite={toggleFavorite}
         onClearHistory={clearHistory}
+      />
+
+      {/* Custom Quote Input */}
+      <CustomQuoteInput
+        isOpen={showCustomQuote}
+        onClose={() => setShowCustomQuote(false)}
+        onSave={handleCustomQuoteSave}
+      />
+
+      {/* Theme Selector */}
+      <ThemeSelector
+        isOpen={showThemeSelector}
+        onClose={() => setShowThemeSelector(false)}
+        selectedTheme={selectedTheme}
+        onSelectTheme={setSelectedTheme}
       />
     </div>
   );

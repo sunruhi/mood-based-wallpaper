@@ -26,7 +26,13 @@ export const useOpenAI = (apiKey?: string, provider: AIProvider = 'free', azureE
       const moodPrompts = {
         happy: "Generate a short, uplifting quote about happiness, joy, or positivity. Keep it under 50 words.",
         sad: "Generate a short, comforting quote about finding peace in difficult times or gentle reflection. Keep it under 50 words.",
-        motivated: "Generate a short, inspiring quote about achievement, success, or motivation. Keep it under 50 words."
+        motivated: "Generate a short, inspiring quote about achievement, success, or motivation. Keep it under 50 words.",
+        peaceful: "Generate a short, serene quote about peace, tranquility, or mindfulness. Keep it under 50 words.",
+        energetic: "Generate a short, dynamic quote about energy, vitality, or taking action. Keep it under 50 words.",
+        romantic: "Generate a short, heartfelt quote about love, romance, or connection. Keep it under 50 words.",
+        mysterious: "Generate a short, intriguing quote about mystery, wonder, or the unknown. Keep it under 50 words.",
+        adventure: "Generate a short, exciting quote about adventure, exploration, or discovering new horizons. Keep it under 50 words.",
+        creative: "Generate a short, inspiring quote about creativity, imagination, or artistic expression. Keep it under 50 words."
       };
 
       let endpoint = '';
@@ -77,6 +83,28 @@ export const useOpenAI = (apiKey?: string, provider: AIProvider = 'free', azureE
           };
           break;
 
+        case 'meta':
+          endpoint = 'https://api.llama-api.com/chat/completions';
+          headers.Authorization = `Bearer ${currentApiKey}`;
+          body = {
+            model: 'llama3-8b-instruct',
+            messages: [{ role: 'user', content: moodPrompts[mood] }],
+            max_tokens: 100,
+            temperature: 0.8,
+          };
+          break;
+
+        case 'groq':
+          endpoint = 'https://api.groq.com/openai/v1/chat/completions';
+          headers.Authorization = `Bearer ${currentApiKey}`;
+          body = {
+            model: 'llama3-8b-8192',
+            messages: [{ role: 'user', content: moodPrompts[mood] }],
+            max_tokens: 100,
+            temperature: 0.8,
+          };
+          break;
+
         default:
           throw new Error(`Unsupported provider: ${provider}`);
       }
@@ -98,6 +126,8 @@ export const useOpenAI = (apiKey?: string, provider: AIProvider = 'free', azureE
       switch (provider) {
         case 'openai':
         case 'azure':
+        case 'meta':
+        case 'groq':
           quoteText = data.choices[0]?.message?.content?.trim();
           break;
         case 'anthropic':
@@ -154,6 +184,36 @@ export const useOpenAI = (apiKey?: string, provider: AIProvider = 'free', azureE
         { text: "The future belongs to those who believe in the beauty of their dreams.", author: "Eleanor Roosevelt" },
         { text: "Success is not final, failure is not fatal: it is the courage to continue that counts.", author: "Winston Churchill" },
         { text: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" }
+      ],
+      peaceful: [
+        { text: "Peace cannot be kept by force; it can only be achieved by understanding.", author: "Albert Einstein" },
+        { text: "In the midst of winter, I found there was, within me, an invincible summer.", author: "Albert Camus" },
+        { text: "Peace comes from within. Do not seek it without.", author: "Buddha" }
+      ],
+      energetic: [
+        { text: "Energy and persistence conquer all things.", author: "Benjamin Franklin" },
+        { text: "The way to get started is to quit talking and begin doing.", author: "Walt Disney" },
+        { text: "Act as if what you do makes a difference. It does.", author: "William James" }
+      ],
+      romantic: [
+        { text: "Being deeply loved by someone gives you strength, while loving someone deeply gives you courage.", author: "Lao Tzu" },
+        { text: "Love is not about how many days, months, or years you have been together. It's about how much you love each other every day.", author: "Unknown" },
+        { text: "The best thing to hold onto in life is each other.", author: "Audrey Hepburn" }
+      ],
+      mysterious: [
+        { text: "The most beautiful thing we can experience is the mysterious.", author: "Albert Einstein" },
+        { text: "Mystery creates wonder and wonder is the basis of man's desire to understand.", author: "Neil Armstrong" },
+        { text: "In the depths of winter, I finally learned that within me there lay an invincible summer.", author: "Albert Camus" }
+      ],
+      adventure: [
+        { text: "Adventure is not outside man; it is within.", author: "George Eliot" },
+        { text: "Life is either a daring adventure or nothing at all.", author: "Helen Keller" },
+        { text: "The biggest adventure you can take is to live the life of your dreams.", author: "Oprah Winfrey" }
+      ],
+      creative: [
+        { text: "Creativity takes courage.", author: "Henri Matisse" },
+        { text: "The creative adult is the child who survived.", author: "Ursula K. Le Guin" },
+        { text: "Imagination is more important than knowledge.", author: "Albert Einstein" }
       ]
     };
 

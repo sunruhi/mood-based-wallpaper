@@ -68,7 +68,13 @@ export const useImageAPI = (provider: ImageProvider = 'picsum', apiKey?: string)
     const moodSeeds = {
       happy: [100, 200, 300, 400, 500],
       sad: [600, 700, 800, 900, 1000],
-      motivated: [1100, 1200, 1300, 1400, 1500]
+      motivated: [1100, 1200, 1300, 1400, 1500],
+      peaceful: [1600, 1700, 1800, 1900, 2000],
+      energetic: [2100, 2200, 2300, 2400, 2500],
+      romantic: [2600, 2700, 2800, 2900, 3000],
+      mysterious: [3100, 3200, 3300, 3400, 3500],
+      adventure: [3600, 3700, 3800, 3900, 4000],
+      creative: [4100, 4200, 4300, 4400, 4500]
     };
     
     const seeds = moodSeeds[mood];
@@ -247,6 +253,78 @@ export const useImageAPI = (provider: ImageProvider = 'picsum', apiKey?: string)
           thumb: 'https://images.unsplash.com/photo-1464822759844-d150ad6d1dff?w=200&h=200&fit=crop'
         },
         alt_description: 'Inspiring mountain peak at sunrise',
+        user: { name: 'Free Images', username: 'free' }
+      },
+      peaceful: {
+        id: 'fallback-peaceful',
+        urls: {
+          raw: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&h=1080&fit=crop',
+          full: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&h=1080&fit=crop',
+          regular: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&h=1080&fit=crop',
+          small: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop',
+          thumb: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=200&fit=crop'
+        },
+        alt_description: 'Peaceful lake reflection with mountains',
+        user: { name: 'Free Images', username: 'free' }
+      },
+      energetic: {
+        id: 'fallback-energetic',
+        urls: {
+          raw: 'https://images.unsplash.com/photo-1464822759844-d150ad6d1dff?w=1920&h=1080&fit=crop',
+          full: 'https://images.unsplash.com/photo-1464822759844-d150ad6d1dff?w=1920&h=1080&fit=crop',
+          regular: 'https://images.unsplash.com/photo-1464822759844-d150ad6d1dff?w=1920&h=1080&fit=crop',
+          small: 'https://images.unsplash.com/photo-1464822759844-d150ad6d1dff?w=400&h=300&fit=crop',
+          thumb: 'https://images.unsplash.com/photo-1464822759844-d150ad6d1dff?w=200&h=200&fit=crop'
+        },
+        alt_description: 'Dynamic mountain peak with vibrant colors',
+        user: { name: 'Free Images', username: 'free' }
+      },
+      romantic: {
+        id: 'fallback-romantic',
+        urls: {
+          raw: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&h=1080&fit=crop',
+          full: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&h=1080&fit=crop',
+          regular: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&h=1080&fit=crop',
+          small: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop',
+          thumb: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=200&fit=crop'
+        },
+        alt_description: 'Beautiful sunset over tranquil landscape',
+        user: { name: 'Free Images', username: 'free' }
+      },
+      mysterious: {
+        id: 'fallback-mysterious',
+        urls: {
+          raw: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=1920&h=1080&fit=crop',
+          full: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=1920&h=1080&fit=crop',
+          regular: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=1920&h=1080&fit=crop',
+          small: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=400&h=300&fit=crop',
+          thumb: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=200&h=200&fit=crop'
+        },
+        alt_description: 'Mysterious foggy landscape with shadows',
+        user: { name: 'Free Images', username: 'free' }
+      },
+      adventure: {
+        id: 'fallback-adventure',
+        urls: {
+          raw: 'https://images.unsplash.com/photo-1464822759844-d150ad6d1dff?w=1920&h=1080&fit=crop',
+          full: 'https://images.unsplash.com/photo-1464822759844-d150ad6d1dff?w=1920&h=1080&fit=crop',
+          regular: 'https://images.unsplash.com/photo-1464822759844-d150ad6d1dff?w=1920&h=1080&fit=crop',
+          small: 'https://images.unsplash.com/photo-1464822759844-d150ad6d1dff?w=400&h=300&fit=crop',
+          thumb: 'https://images.unsplash.com/photo-1464822759844-d150ad6d1dff?w=200&h=200&fit=crop'
+        },
+        alt_description: 'Adventure awaits on mountain trails',
+        user: { name: 'Free Images', username: 'free' }
+      },
+      creative: {
+        id: 'fallback-creative',
+        urls: {
+          raw: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&h=1080&fit=crop',
+          full: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&h=1080&fit=crop',
+          regular: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&h=1080&fit=crop',
+          small: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop',
+          thumb: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=200&fit=crop'
+        },
+        alt_description: 'Creative inspiration from natural beauty',
         user: { name: 'Free Images', username: 'free' }
       }
     };

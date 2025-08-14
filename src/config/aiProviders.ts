@@ -39,6 +39,22 @@ export const AI_PROVIDERS: Record<AIProvider, AIProviderConfig> = {
     requiresApiKey: true,
     getKeyUrl: 'https://portal.azure.com/',
     icon: '☁️'
+  },
+  meta: {
+    id: 'meta',
+    name: 'Meta Llama',
+    description: 'Meta\'s Llama models for AI generation',
+    requiresApiKey: true,
+    getKeyUrl: 'https://developers.facebook.com/docs/llama-api',
+    icon: '🦙'
+  },
+  groq: {
+    id: 'groq',
+    name: 'Groq',
+    description: 'Fast inference with Groq LPU technology',
+    requiresApiKey: true,
+    getKeyUrl: 'https://console.groq.com/keys',
+    icon: '⚡'
   }
 };
 

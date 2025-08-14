@@ -1,4 +1,4 @@
-export type Mood = 'happy' | 'sad' | 'motivated';
+export type Mood = 'happy' | 'sad' | 'motivated' | 'peaceful' | 'energetic' | 'romantic' | 'mysterious' | 'adventure' | 'creative';
 
 export interface MoodConfig {
   id: Mood;
@@ -37,7 +37,7 @@ export interface WallpaperData {
   mood: Mood;
 }
 
-export type AIProvider = 'free' | 'openai' | 'anthropic' | 'google' | 'azure';
+export type AIProvider = 'free' | 'openai' | 'anthropic' | 'google' | 'azure' | 'meta' | 'groq';
 export type ImageProvider = 'picsum' | 'pixabay' | 'pexels' | 'unsplash';
 
 export interface AIProviderConfig {
@@ -70,6 +70,8 @@ export interface ApiKeys {
   googleKey: string;
   azureKey: string;
   azureEndpoint: string;
+  metaKey: string;
+  groqKey: string;
 }
 
 export interface SavedWallpaper extends WallpaperData {
