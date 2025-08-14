@@ -330,6 +330,7 @@ export const Home: React.FC = () => {
               <ImageDisplay
                 image={wallpaperData.image}
                 quote={wallpaperData.quote}
+                themeId={selectedTheme}
               />
               
               <div className="flex justify-center gap-4">
