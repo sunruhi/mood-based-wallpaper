@@ -69,6 +69,11 @@ export const Home: React.FC = () => {
       // Generate wallpaper with shared parameters
       handleMoodSelect(mood);
     }
+
+    // Log clipboard capabilities in development
+    if (import.meta.env.DEV) {
+      logClipboardCapabilities();
+    }
   }, []);
 
   const handleMoodSelect = async (moodId: string) => {
