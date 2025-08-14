@@ -28,15 +28,55 @@ export const ShareButton: React.FC<ShareButtonProps> = ({ wallpaperData, disable
     return `${window.location.origin}?${params.toString()}`;
   };
 
-  const handleCopyLink = async () => {
+  const fallbackCopyToClipboard = (text: string): boolean => {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
     try {
-      const shareUrl = generateShareUrl();
-      await navigator.clipboard.writeText(shareUrl);
+      const successful = document.execCommand('copy');
+      document.body.removeChild(textArea);
+      return successful;
+    } catch (error) {
+      document.body.removeChild(textArea);
+      return false;
+    }
+  };
+
+  const handleCopyLink = async () => {
+    const shareUrl = generateShareUrl();
+    setCopyError(null);
+
+    // Reset previous states
+    setCopied(false);
+
+    // Try modern Clipboard API first
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+        return;
+      } catch (error) {
+        console.warn('Clipboard API failed, trying fallback:', error);
+      }
+    }
+
+    // Try legacy method
+    if (fallbackCopyToClipboard(shareUrl)) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      console.error('Failed to copy link:', error);
+      return;
     }
+
+    // If all else fails, show link in modal
+    setCopyError('Unable to copy automatically. Link will be displayed for manual copying.');
+    setShowLinkModal(true);
   };
 
   const handleShare = async (platform?: string) => {
