@@ -212,6 +212,72 @@ export const ShareButton: React.FC<ShareButtonProps> = ({ wallpaperData, disable
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Manual Copy Link Modal */}
+      <AnimatePresence>
+        {showLinkModal && (
+          <motion.div
+            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowLinkModal(false)}
+          >
+            <motion.div
+              className="bg-white rounded-lg w-full max-w-md overflow-hidden"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <AlertCircle className="text-orange-500" size={24} />
+                  <h3 className="text-lg font-semibold text-gray-800">Copy Link Manually</h3>
+                </div>
+
+                <p className="text-sm text-gray-600 mb-4">
+                  Automatic copying isn't available. Please copy the link below manually:
+                </p>
+
+                <div className="bg-gray-50 border border-gray-200 rounded-md p-3 mb-4">
+                  <textarea
+                    value={generateShareUrl()}
+                    readOnly
+                    className="w-full text-sm text-gray-800 bg-transparent border-none resize-none focus:outline-none"
+                    rows={3}
+                    onClick={(e) => e.currentTarget.select()}
+                  />
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowLinkModal(false)}
+                    className="flex-1 px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                  >
+                    Close
+                  </button>
+                  <button
+                    onClick={() => {
+                      const textarea = document.querySelector('textarea');
+                      if (textarea) {
+                        textarea.select();
+                        document.execCommand('copy');
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 2000);
+                      }
+                      setShowLinkModal(false);
+                    }}
+                    className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                  >
+                    Select & Copy
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
