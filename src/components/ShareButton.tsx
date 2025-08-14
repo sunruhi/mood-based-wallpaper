@@ -189,6 +189,11 @@ export const ShareButton: React.FC<ShareButtonProps> = ({ wallpaperData, disable
                     <Check size={16} className="text-green-500" />
                     <span className="text-green-600">Link copied!</span>
                   </>
+                ) : copyError ? (
+                  <>
+                    <AlertCircle size={16} className="text-orange-500" />
+                    <span className="text-orange-600">Manual copy</span>
+                  </>
                 ) : (
                   <>
                     <Link size={16} />
