@@ -33,11 +33,6 @@ export const Home: React.FC = () => {
   const [selectedTheme, setSelectedTheme] = useState(DEFAULT_THEME);
 
   const { apiKeys, saveApiKeys, hasCurrentImageKey, hasCurrentAIKey, getCurrentAIKey, getCurrentImageKey, selectedAIProvider, selectedImageProvider } = useApiKeys();
-
-  // Debug logging to identify AI provider issue
-  console.log('Selected AI Provider:', selectedAIProvider);
-  console.log('AI_PROVIDERS object:', AI_PROVIDERS);
-  console.log('Selected AI Provider config:', AI_PROVIDERS[selectedAIProvider]);
   const { fetchImageByMood, loading: imageLoading, error: imageError } = useImageAPI(selectedImageProvider, getCurrentImageKey());
   const { generateQuote, loading: quoteLoading, error: quoteError } = useOpenAI(
     getCurrentAIKey(),
