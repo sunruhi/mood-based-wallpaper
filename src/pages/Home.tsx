@@ -4,7 +4,6 @@ import { Settings, Clock, Type, Palette } from 'lucide-react';
 import { MoodCard } from '../components/MoodCard';
 import { ImageDisplay } from '../components/ImageDisplay';
 import { DownloadButton } from '../components/DownloadButton';
-import { ShareButton } from '../components/ShareButton';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { ApiKeySettings } from '../components/ApiKeySettings';
