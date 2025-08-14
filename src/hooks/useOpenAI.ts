@@ -118,10 +118,20 @@ export const useOpenAI = (apiKey?: string, provider: AIProvider = 'free', azureE
       };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to generate quote';
-      setError(errorMessage);
+      console.error(`Error with ${provider} API:`, err);
 
-      // If there's an API error and we're not using free provider,
-      // return fallback but keep the error state
+      // Provide user-friendly error messages and automatic fallback
+      if (errorMessage.includes('401') || errorMessage.includes('not valid') || errorMessage.includes('unauthorized')) {
+        setError(`${provider} API key invalid. Using free quotes.`);
+      } else if (errorMessage.includes('403') || errorMessage.includes('quota') || errorMessage.includes('limit')) {
+        setError(`${provider} quota exceeded. Using free quotes.`);
+      } else if (errorMessage.includes('fetch') || errorMessage.includes('network')) {
+        setError(`${provider} temporarily unavailable. Using free quotes.`);
+      } else {
+        setError(`${provider} error. Using free quotes.`);
+      }
+
+      // Always return fallback quotes when external providers fail
       return getFallbackQuote(mood);
     } finally {
       setLoading(false);
