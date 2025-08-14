@@ -384,6 +384,14 @@ export const Home: React.FC = () => {
         onClose={() => setShowCustomQuote(false)}
         onSave={handleCustomQuoteSave}
       />
+
+      {/* Theme Selector */}
+      <ThemeSelector
+        isOpen={showThemeSelector}
+        onClose={() => setShowThemeSelector(false)}
+        selectedTheme={selectedTheme}
+        onSelectTheme={setSelectedTheme}
+      />
     </div>
   );
 };
