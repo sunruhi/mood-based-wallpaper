@@ -152,8 +152,14 @@ export const Home: React.FC = () => {
           >
             <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-2">
               <span className="text-lg">{AI_PROVIDERS[selectedAIProvider].icon}</span>
+              {selectedImageProvider !== 'picsum' && (
+                <span className="text-lg">{IMAGE_PROVIDERS[selectedImageProvider].icon}</span>
+              )}
               <span className="text-white text-sm font-medium">
                 Powered by {AI_PROVIDERS[selectedAIProvider].name}
+                {selectedImageProvider !== 'picsum' && (
+                  <span> + {IMAGE_PROVIDERS[selectedImageProvider].name}</span>
+                )}
               </span>
             </div>
           </motion.div>
