@@ -296,9 +296,13 @@ export const Home: React.FC = () => {
                 quote={wallpaperData.quote}
               />
               
-              <div className="flex justify-center">
+              <div className="flex justify-center gap-4">
                 <DownloadButton
                   mood={wallpaperData.mood}
+                  disabled={isLoading}
+                />
+                <ShareButton
+                  wallpaperData={wallpaperData}
                   disabled={isLoading}
                 />
               </div>
