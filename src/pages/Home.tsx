@@ -52,6 +52,7 @@ export const Home: React.FC = () => {
         generateQuote(mood)
       ]);
 
+      // Always ensure we have content, even if APIs failed
       if (image && quote) {
         const newWallpaperData = {
           image,
@@ -60,13 +61,15 @@ export const Home: React.FC = () => {
         };
         setWallpaperData(newWallpaperData);
 
-        // Auto-save to history only if no errors occurred
-        if (!imageError && !quoteError) {
-          saveWallpaper(newWallpaperData);
-        }
+        // Auto-save to history - save even if there were API errors since we have fallback content
+        saveWallpaper(newWallpaperData);
+      } else {
+        console.error('Failed to generate both image and quote');
+        // This should not happen as our hooks always return fallback content
       }
     } catch (error) {
       console.error('Error generating wallpaper:', error);
+      // Even in case of unexpected errors, the hooks should have returned fallback content
     } finally {
       setIsGenerating(false);
     }
