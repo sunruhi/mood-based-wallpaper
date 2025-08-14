@@ -25,10 +25,10 @@ export const MoodCard: React.FC<MoodCardProps> = ({ mood, onSelect, isSelected =
       data-testid={`mood-card-${mood.id}`}
     >
       <div className="p-4 h-28 flex flex-col justify-between text-white">
-        <div className="text-3xl mb-2">{mood.icon}</div>
+        <div className="text-2xl mb-1">{mood.icon}</div>
         <div>
-          <h3 className="text-xl font-bold mb-1">{mood.label}</h3>
-          <p className="text-sm opacity-90">{mood.description}</p>
+          <h3 className="text-lg font-bold mb-1">{mood.label}</h3>
+          <p className="text-xs opacity-90">{mood.description}</p>
         </div>
       </div>
       
