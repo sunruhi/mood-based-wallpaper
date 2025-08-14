@@ -137,6 +137,22 @@ export const Home: React.FC = () => {
           <p className="text-xl text-white opacity-90">
             Select your mood and get a personalized wallpaper with an inspiring quote
           </p>
+
+          {/* AI Provider Badge */}
+          <motion.div
+            className="mt-4 flex items-center justify-center"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+          >
+            <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-2">
+              <span className="text-lg">{AI_PROVIDERS[selectedAIProvider].icon}</span>
+              <span className="text-white text-sm font-medium">
+                Powered by {AI_PROVIDERS[selectedAIProvider].name}
+              </span>
+            </div>
+          </motion.div>
+
           {((selectedImageProvider !== 'picsum' && !hasCurrentImageKey) || (selectedAIProvider !== 'free' && !hasCurrentAIKey)) && (
             <motion.div
               className="mt-4 text-sm text-white opacity-80"
