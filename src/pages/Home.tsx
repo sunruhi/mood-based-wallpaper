@@ -175,7 +175,7 @@ export const Home: React.FC = () => {
 
           {/* AI Provider Badge */}
           <motion.div
-            className="mt-4 flex items-center justify-center"
+            className="mt-4 flex items-center justify-center gap-3"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
@@ -192,6 +192,19 @@ export const Home: React.FC = () => {
                 )}
               </span>
             </div>
+
+            {customQuote && (
+              <div className="bg-green-500 bg-opacity-90 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-2">
+                <Type className="w-4 h-4 text-white" />
+                <span className="text-white text-xs font-medium">Custom Quote Active</span>
+                <button
+                  onClick={() => setCustomQuote(null)}
+                  className="text-white hover:text-gray-200 text-xs ml-1"
+                >
+                  ×
+                </button>
+              </div>
+            )}
           </motion.div>
 
           {((selectedImageProvider !== 'picsum' && !hasCurrentImageKey) || (selectedAIProvider !== 'free' && !hasCurrentAIKey)) && (
