@@ -53,7 +53,7 @@ export const Home: React.FC = () => {
       // Generate image and quote in parallel
       const [image, quote] = await Promise.all([
         fetchImageByMood(mood),
-        generateQuote(mood)
+        customQuote ? Promise.resolve(customQuote) : generateQuote(mood)
       ]);
 
       // Always ensure we have content, even if APIs failed
