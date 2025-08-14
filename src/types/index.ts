@@ -37,7 +37,7 @@ export interface WallpaperData {
   mood: Mood;
 }
 
-export type AIProvider = 'free' | 'openai' | 'anthropic' | 'google' | 'azure';
+export type AIProvider = 'free' | 'openai' | 'anthropic' | 'google' | 'azure' | 'meta' | 'groq';
 export type ImageProvider = 'picsum' | 'pixabay' | 'pexels' | 'unsplash';
 
 export interface AIProviderConfig {
