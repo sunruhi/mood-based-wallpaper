@@ -1,11 +1,13 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { UnsplashImage, GeneratedQuote } from '../types';
+import { THEMES, ThemeConfig, DEFAULT_THEME } from '../config/themes';
 
 interface ImageDisplayProps {
   image: UnsplashImage;
   quote: GeneratedQuote;
   isLoading?: boolean;
+  themeId?: string;
 }
 
 export const ImageDisplay: React.FC<ImageDisplayProps> = ({ image, quote, isLoading = false }) => {
