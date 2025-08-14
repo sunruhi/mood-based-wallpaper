@@ -120,6 +120,21 @@ export const Home: React.FC = () => {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.5 }}
         >
+          {/* Custom Quote Button */}
+          <button
+            onClick={() => setShowCustomQuote(true)}
+            className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-opacity-30 transition-all duration-200 shadow-lg"
+            data-testid="custom-quote-button"
+            title="Add Custom Quote"
+          >
+            <Type className="w-5 h-5" />
+            {customQuote && (
+              <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                ✓
+              </span>
+            )}
+          </button>
+
           {/* History Button */}
           <button
             onClick={() => setShowHistory(true)}
