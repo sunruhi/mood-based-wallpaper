@@ -126,6 +126,8 @@ export const useOpenAI = (apiKey?: string, provider: AIProvider = 'free', azureE
       switch (provider) {
         case 'openai':
         case 'azure':
+        case 'meta':
+        case 'groq':
           quoteText = data.choices[0]?.message?.content?.trim();
           break;
         case 'anthropic':
