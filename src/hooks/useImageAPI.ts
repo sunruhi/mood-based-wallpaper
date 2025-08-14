@@ -11,22 +11,53 @@ export const useImageAPI = (provider: ImageProvider = 'picsum', apiKey?: string)
     setError(null);
 
     try {
+      // Check if API key is required but not provided, fallback to picsum
+      if ((provider === 'pixabay' || provider === 'pexels' || provider === 'unsplash') && (!apiKey || !apiKey.trim())) {
+        console.warn(`${provider} requires API key, falling back to picsum`);
+        return await fetchPicsumImage(mood);
+      }
+
+      // Try the selected provider
+      let result: UnsplashImage | null = null;
+
       switch (provider) {
         case 'picsum':
-          return await fetchPicsumImage(mood);
+          result = await fetchPicsumImage(mood);
+          break;
         case 'pixabay':
-          return await fetchPixabayImage(mood, apiKey);
+          result = await fetchPixabayImage(mood, apiKey);
+          break;
         case 'pexels':
-          return await fetchPexelsImage(mood, apiKey);
+          result = await fetchPexelsImage(mood, apiKey);
+          break;
         case 'unsplash':
-          return await fetchUnsplashImage(mood, apiKey);
+          result = await fetchUnsplashImage(mood, apiKey);
+          break;
         default:
-          return getFallbackImage(mood);
+          result = getFallbackImage(mood);
       }
+
+      return result;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch image';
-      setError(errorMessage);
-      return getFallbackImage(mood);
+      console.error(`Error fetching image from ${provider}:`, err);
+
+      // If external provider fails, automatically try picsum as fallback
+      if (provider !== 'picsum') {
+        console.log(`${provider} failed, attempting fallback to picsum...`);
+        setError(`${provider} temporarily unavailable. Using free images.`);
+        try {
+          return await fetchPicsumImage(mood);
+        } catch (picsumErr) {
+          console.error('Picsum fallback also failed:', picsumErr);
+          setError('Image services temporarily unavailable. Using built-in fallback.');
+          return getFallbackImage(mood);
+        }
+      } else {
+        // If even picsum fails, use built-in fallback
+        setError('All image services temporarily unavailable. Using built-in fallback.');
+        return getFallbackImage(mood);
+      }
     } finally {
       setLoading(false);
     }
@@ -66,24 +97,24 @@ export const useImageAPI = (provider: ImageProvider = 'picsum', apiKey?: string)
   };
 
   const fetchPixabayImage = async (mood: Mood, key?: string): Promise<UnsplashImage> => {
-    if (!key) {
+    if (!key || !key.trim()) {
       throw new Error('Pixabay API key is required');
     }
 
     const moodConfig = MOODS[mood];
     const searchTerm = moodConfig.searchTerms[Math.floor(Math.random() * moodConfig.searchTerms.length)];
-    
+
     const response = await fetch(
-      `https://pixabay.com/api/?key=${key}&q=${searchTerm}&image_type=photo&orientation=horizontal&category=nature&min_width=1920&min_height=1080&per_page=20`
+      `https://pixabay.com/api/?key=${key}&q=${encodeURIComponent(searchTerm)}&image_type=photo&orientation=horizontal&category=nature&min_width=1920&min_height=1080&per_page=20`
     );
 
     if (!response.ok) {
-      throw new Error(`Pixabay API error: ${response.status}`);
+      throw new Error(`Pixabay API error: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
     if (!data.hits || data.hits.length === 0) {
-      throw new Error('No images found on Pixabay');
+      throw new Error('No images found on Pixabay for this mood');
     }
 
     const randomImage = data.hits[Math.floor(Math.random() * data.hits.length)];
@@ -106,15 +137,15 @@ export const useImageAPI = (provider: ImageProvider = 'picsum', apiKey?: string)
   };
 
   const fetchPexelsImage = async (mood: Mood, key?: string): Promise<UnsplashImage> => {
-    if (!key) {
+    if (!key || !key.trim()) {
       throw new Error('Pexels API key is required');
     }
 
     const moodConfig = MOODS[mood];
     const searchTerm = moodConfig.searchTerms[Math.floor(Math.random() * moodConfig.searchTerms.length)];
-    
+
     const response = await fetch(
-      `https://api.pexels.com/v1/search?query=${searchTerm}&orientation=landscape&size=large&per_page=20`,
+      `https://api.pexels.com/v1/search?query=${encodeURIComponent(searchTerm)}&orientation=landscape&size=large&per_page=20`,
       {
         headers: {
           Authorization: key
@@ -123,12 +154,15 @@ export const useImageAPI = (provider: ImageProvider = 'picsum', apiKey?: string)
     );
 
     if (!response.ok) {
-      throw new Error(`Pexels API error: ${response.status}`);
+      if (response.status === 401) {
+        throw new Error('Invalid Pexels API key');
+      }
+      throw new Error(`Pexels API error: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
     if (!data.photos || data.photos.length === 0) {
-      throw new Error('No images found on Pexels');
+      throw new Error('No images found on Pexels for this mood');
     }
 
     const randomImage = data.photos[Math.floor(Math.random() * data.photos.length)];
@@ -151,15 +185,15 @@ export const useImageAPI = (provider: ImageProvider = 'picsum', apiKey?: string)
   };
 
   const fetchUnsplashImage = async (mood: Mood, key?: string): Promise<UnsplashImage> => {
-    if (!key) {
+    if (!key || !key.trim()) {
       throw new Error('Unsplash API key is required');
     }
 
     const moodConfig = MOODS[mood];
     const searchTerm = moodConfig.searchTerms[Math.floor(Math.random() * moodConfig.searchTerms.length)];
-    
+
     const response = await fetch(
-      `https://api.unsplash.com/photos/random?query=${searchTerm}&orientation=landscape&w=1920&h=1080`,
+      `https://api.unsplash.com/photos/random?query=${encodeURIComponent(searchTerm)}&orientation=landscape&w=1920&h=1080`,
       {
         headers: {
           Authorization: `Client-ID ${key}`,
@@ -168,7 +202,10 @@ export const useImageAPI = (provider: ImageProvider = 'picsum', apiKey?: string)
     );
 
     if (!response.ok) {
-      throw new Error(`Unsplash API error: ${response.status}`);
+      if (response.status === 401) {
+        throw new Error('Invalid Unsplash API key');
+      }
+      throw new Error(`Unsplash API error: ${response.status} ${response.statusText}`);
     }
 
     return await response.json();

@@ -13,6 +13,8 @@ import { useOpenAI } from '../hooks/useOpenAI';
 import { useApiKeys } from '../hooks/useApiKeys';
 import { useWallpaperHistory } from '../hooks/useWallpaperHistory';
 import { MOODS } from '../config/moods';
+import { AI_PROVIDERS } from '../config/aiProviders';
+import { IMAGE_PROVIDERS } from '../config/imageProviders';
 import { WallpaperData, Mood, SavedWallpaper } from '../types';
 
 export const Home: React.FC = () => {
@@ -51,6 +53,7 @@ export const Home: React.FC = () => {
         generateQuote(mood)
       ]);
 
+      // Always ensure we have content, even if APIs failed
       if (image && quote) {
         const newWallpaperData = {
           image,
@@ -59,13 +62,15 @@ export const Home: React.FC = () => {
         };
         setWallpaperData(newWallpaperData);
 
-        // Auto-save to history only if no errors occurred
-        if (!imageError && !quoteError) {
-          saveWallpaper(newWallpaperData);
-        }
+        // Auto-save to history - save even if there were API errors since we have fallback content
+        saveWallpaper(newWallpaperData);
+      } else {
+        console.error('Failed to generate both image and quote');
+        // This should not happen as our hooks always return fallback content
       }
     } catch (error) {
       console.error('Error generating wallpaper:', error);
+      // Even in case of unexpected errors, the hooks should have returned fallback content
     } finally {
       setIsGenerating(false);
     }
@@ -137,6 +142,28 @@ export const Home: React.FC = () => {
           <p className="text-xl text-white opacity-90">
             Select your mood and get a personalized wallpaper with an inspiring quote
           </p>
+
+          {/* AI Provider Badge */}
+          <motion.div
+            className="mt-4 flex items-center justify-center"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+          >
+            <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-2">
+              <span className="text-lg">{AI_PROVIDERS[selectedAIProvider].icon}</span>
+              {selectedImageProvider !== 'picsum' && (
+                <span className="text-lg">{IMAGE_PROVIDERS[selectedImageProvider].icon}</span>
+              )}
+              <span className="text-white text-sm font-medium">
+                Powered by {AI_PROVIDERS[selectedAIProvider].name}
+                {selectedImageProvider !== 'picsum' && (
+                  <span> + {IMAGE_PROVIDERS[selectedImageProvider].name}</span>
+                )}
+              </span>
+            </div>
+          </motion.div>
+
           {((selectedImageProvider !== 'picsum' && !hasCurrentImageKey) || (selectedAIProvider !== 'free' && !hasCurrentAIKey)) && (
             <motion.div
               className="mt-4 text-sm text-white opacity-80"
@@ -147,7 +174,20 @@ export const Home: React.FC = () => {
               <p>
                 {selectedAIProvider === 'free' && selectedImageProvider === 'picsum'
                   ? 'Using Free providers. Upgrade to premium providers for enhanced quality and variety.'
-                  : 'Add API keys in settings for enhanced functionality and better quality content.'}
+                  : 'Add valid API keys in settings for enhanced functionality. Invalid keys will automatically fallback to free content.'}
+              </p>
+            </motion.div>
+          )}
+
+          {(imageError || quoteError) && !isLoading && (
+            <motion.div
+              className="mt-4 text-sm text-white opacity-80"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+            >
+              <p>
+                💡 Tip: Switch to free providers in settings for reliable service without API keys.
               </p>
             </motion.div>
           )}
@@ -176,11 +216,28 @@ export const Home: React.FC = () => {
             <LoadingSpinner message="Creating your personalized wallpaper..." />
           )}
 
-          {error && (
-            <ErrorMessage
-              message={error}
-              onRetry={handleRetry}
-            />
+          {(imageError || quoteError) && (
+            <motion.div
+              className="bg-orange-100 border border-orange-400 text-orange-700 px-4 py-3 rounded-xl mb-4 max-w-2xl mx-auto"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-lg">⚠️</span>
+                <div>
+                  <p className="font-medium">Using fallback content</p>
+                  <p className="text-sm">
+                    {imageError && quoteError ?
+                      "External services temporarily unavailable. Using built-in content." :
+                      imageError ?
+                        imageError :
+                        quoteError
+                    }
+                  </p>
+                </div>
+              </div>
+            </motion.div>
           )}
 
           {wallpaperData && !isLoading && !error && (

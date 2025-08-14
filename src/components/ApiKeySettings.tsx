@@ -34,6 +34,13 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const imageDropdownRef = useRef<HTMLDivElement>(null);
 
+  // Update form keys when modal opens to reflect current apiKeys
+  useEffect(() => {
+    if (isOpen) {
+      setFormKeys(apiKeys);
+    }
+  }, [isOpen, apiKeys]);
+
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -362,7 +369,7 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
                 <div className="space-y-4 bg-gray-50 p-5 rounded-xl border border-gray-200">
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 bg-purple-500 rounded-md flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">🤖</span>
+                      <span className="text-white text-xs font-bold">���</span>
                     </div>
                     <label className="text-sm font-semibold text-gray-800">
                       AI Quote Provider
