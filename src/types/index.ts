@@ -70,6 +70,8 @@ export interface ApiKeys {
   googleKey: string;
   azureKey: string;
   azureEndpoint: string;
+  metaKey: string;
+  groqKey: string;
 }
 
 export interface SavedWallpaper extends WallpaperData {
