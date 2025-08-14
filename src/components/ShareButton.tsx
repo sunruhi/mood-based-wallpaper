@@ -11,6 +11,8 @@ interface ShareButtonProps {
 export const ShareButton: React.FC<ShareButtonProps> = ({ wallpaperData, disabled = false }) => {
   const [showOptions, setShowOptions] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [copyError, setCopyError] = useState<string | null>(null);
+  const [showLinkModal, setShowLinkModal] = useState(false);
 
   const generateShareText = () => {
     return `Check out this ${wallpaperData.mood} wallpaper I created! "${wallpaperData.quote.text}" ${wallpaperData.quote.author ? '- ' + wallpaperData.quote.author : ''}`;
