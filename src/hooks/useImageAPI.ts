@@ -104,24 +104,17 @@ export const useImageAPI = (provider: ImageProvider = 'picsum', apiKey?: string)
     const moodConfig = MOODS[mood];
     const searchTerm = moodConfig.searchTerms[Math.floor(Math.random() * moodConfig.searchTerms.length)];
 
-    try {
-      const response = await fetch(
-        `https://pixabay.com/api/?key=${key}&q=${searchTerm}&image_type=photo&orientation=horizontal&category=nature&min_width=1920&min_height=1080&per_page=20`
-      );
+    const response = await fetch(
+      `https://pixabay.com/api/?key=${key}&q=${encodeURIComponent(searchTerm)}&image_type=photo&orientation=horizontal&category=nature&min_width=1920&min_height=1080&per_page=20`
+    );
 
-      if (!response.ok) {
-        throw new Error(`Pixabay API error: ${response.status} ${response.statusText}`);
-      }
+    if (!response.ok) {
+      throw new Error(`Pixabay API error: ${response.status} ${response.statusText}`);
+    }
 
-      const data = await response.json();
-      if (!data.hits || data.hits.length === 0) {
-        throw new Error('No images found on Pixabay for this mood');
-      }
-    } catch (fetchError) {
-      if (fetchError instanceof TypeError && fetchError.message.includes('fetch')) {
-        throw new Error('Network error: Unable to connect to Pixabay');
-      }
-      throw fetchError;
+    const data = await response.json();
+    if (!data.hits || data.hits.length === 0) {
+      throw new Error('No images found on Pixabay for this mood');
     }
 
     const randomImage = data.hits[Math.floor(Math.random() * data.hits.length)];
@@ -151,32 +144,25 @@ export const useImageAPI = (provider: ImageProvider = 'picsum', apiKey?: string)
     const moodConfig = MOODS[mood];
     const searchTerm = moodConfig.searchTerms[Math.floor(Math.random() * moodConfig.searchTerms.length)];
 
-    try {
-      const response = await fetch(
-        `https://api.pexels.com/v1/search?query=${encodeURIComponent(searchTerm)}&orientation=landscape&size=large&per_page=20`,
-        {
-          headers: {
-            Authorization: key
-          }
+    const response = await fetch(
+      `https://api.pexels.com/v1/search?query=${encodeURIComponent(searchTerm)}&orientation=landscape&size=large&per_page=20`,
+      {
+        headers: {
+          Authorization: key
         }
-      );
+      }
+    );
 
-      if (!response.ok) {
-        if (response.status === 401) {
-          throw new Error('Invalid Pexels API key');
-        }
-        throw new Error(`Pexels API error: ${response.status} ${response.statusText}`);
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('Invalid Pexels API key');
       }
+      throw new Error(`Pexels API error: ${response.status} ${response.statusText}`);
+    }
 
-      const data = await response.json();
-      if (!data.photos || data.photos.length === 0) {
-        throw new Error('No images found on Pexels for this mood');
-      }
-    } catch (fetchError) {
-      if (fetchError instanceof TypeError && fetchError.message.includes('fetch')) {
-        throw new Error('Network error: Unable to connect to Pexels');
-      }
-      throw fetchError;
+    const data = await response.json();
+    if (!data.photos || data.photos.length === 0) {
+      throw new Error('No images found on Pexels for this mood');
     }
 
     const randomImage = data.photos[Math.floor(Math.random() * data.photos.length)];
@@ -206,30 +192,23 @@ export const useImageAPI = (provider: ImageProvider = 'picsum', apiKey?: string)
     const moodConfig = MOODS[mood];
     const searchTerm = moodConfig.searchTerms[Math.floor(Math.random() * moodConfig.searchTerms.length)];
 
-    try {
-      const response = await fetch(
-        `https://api.unsplash.com/photos/random?query=${encodeURIComponent(searchTerm)}&orientation=landscape&w=1920&h=1080`,
-        {
-          headers: {
-            Authorization: `Client-ID ${key}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          throw new Error('Invalid Unsplash API key');
-        }
-        throw new Error(`Unsplash API error: ${response.status} ${response.statusText}`);
+    const response = await fetch(
+      `https://api.unsplash.com/photos/random?query=${encodeURIComponent(searchTerm)}&orientation=landscape&w=1920&h=1080`,
+      {
+        headers: {
+          Authorization: `Client-ID ${key}`,
+        },
       }
+    );
 
-      return await response.json();
-    } catch (fetchError) {
-      if (fetchError instanceof TypeError && fetchError.message.includes('fetch')) {
-        throw new Error('Network error: Unable to connect to Unsplash');
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('Invalid Unsplash API key');
       }
-      throw fetchError;
+      throw new Error(`Unsplash API error: ${response.status} ${response.statusText}`);
     }
+
+    return await response.json();
   };
 
   const getFallbackImage = (mood: Mood): UnsplashImage => {
