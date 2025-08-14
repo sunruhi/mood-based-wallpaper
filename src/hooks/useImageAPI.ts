@@ -17,23 +17,47 @@ export const useImageAPI = (provider: ImageProvider = 'picsum', apiKey?: string)
         return await fetchPicsumImage(mood);
       }
 
+      // Try the selected provider
+      let result: UnsplashImage | null = null;
+
       switch (provider) {
         case 'picsum':
-          return await fetchPicsumImage(mood);
+          result = await fetchPicsumImage(mood);
+          break;
         case 'pixabay':
-          return await fetchPixabayImage(mood, apiKey);
+          result = await fetchPixabayImage(mood, apiKey);
+          break;
         case 'pexels':
-          return await fetchPexelsImage(mood, apiKey);
+          result = await fetchPexelsImage(mood, apiKey);
+          break;
         case 'unsplash':
-          return await fetchUnsplashImage(mood, apiKey);
+          result = await fetchUnsplashImage(mood, apiKey);
+          break;
         default:
-          return getFallbackImage(mood);
+          result = getFallbackImage(mood);
       }
+
+      return result;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch image';
       console.error(`Error fetching image from ${provider}:`, err);
-      setError(`${provider} error: ${errorMessage}. Using fallback image.`);
-      return getFallbackImage(mood);
+
+      // If external provider fails, automatically try picsum as fallback
+      if (provider !== 'picsum') {
+        console.log(`${provider} failed, attempting fallback to picsum...`);
+        setError(`${provider} temporarily unavailable. Using free images.`);
+        try {
+          return await fetchPicsumImage(mood);
+        } catch (picsumErr) {
+          console.error('Picsum fallback also failed:', picsumErr);
+          setError('Image services temporarily unavailable. Using built-in fallback.');
+          return getFallbackImage(mood);
+        }
+      } else {
+        // If even picsum fails, use built-in fallback
+        setError('All image services temporarily unavailable. Using built-in fallback.');
+        return getFallbackImage(mood);
+      }
     } finally {
       setLoading(false);
     }
