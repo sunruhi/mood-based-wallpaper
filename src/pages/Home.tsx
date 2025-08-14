@@ -44,6 +44,28 @@ export const Home: React.FC = () => {
     totalCount
   } = useWallpaperHistory();
 
+  // Handle shared wallpaper from URL parameters
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const mood = urlParams.get('mood') as Mood;
+    const quote = urlParams.get('quote');
+    const author = urlParams.get('author');
+    const imageId = urlParams.get('image');
+
+    if (mood && quote && Object.keys(MOODS).includes(mood)) {
+      setCustomQuote({ text: quote, author: author || undefined });
+      setSelectedMood(mood);
+
+      // Clear URL parameters after processing
+      if (window.history.replaceState) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      // Generate wallpaper with shared parameters
+      handleMoodSelect(mood);
+    }
+  }, []);
+
   const handleMoodSelect = async (moodId: string) => {
     const mood = moodId as Mood;
     setSelectedMood(mood);
