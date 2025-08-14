@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Settings, Clock } from 'lucide-react';
+import { Settings, Clock, Type } from 'lucide-react';
 import { MoodCard } from '../components/MoodCard';
 import { ImageDisplay } from '../components/ImageDisplay';
 import { DownloadButton } from '../components/DownloadButton';
@@ -8,6 +8,7 @@ import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { ApiKeySettings } from '../components/ApiKeySettings';
 import { HistoryPanel } from '../components/HistoryPanel';
+import { CustomQuoteInput } from '../components/CustomQuoteInput';
 import { useImageAPI } from '../hooks/useImageAPI';
 import { useOpenAI } from '../hooks/useOpenAI';
 import { useApiKeys } from '../hooks/useApiKeys';
@@ -23,6 +24,8 @@ export const Home: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [showCustomQuote, setShowCustomQuote] = useState(false);
+  const [customQuote, setCustomQuote] = useState<{text: string; author?: string} | null>(null);
 
   const { apiKeys, saveApiKeys, hasCurrentImageKey, hasCurrentAIKey, getCurrentAIKey, getCurrentImageKey, selectedAIProvider, selectedImageProvider } = useApiKeys();
   const { fetchImageByMood, loading: imageLoading, error: imageError } = useImageAPI(selectedImageProvider, getCurrentImageKey());
