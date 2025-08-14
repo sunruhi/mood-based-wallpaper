@@ -13,8 +13,9 @@ export const useOpenAI = (apiKey?: string, provider: AIProvider = 'free', azureE
 
     const currentApiKey = apiKey || import.meta.env.VITE_OPENAI_API_KEY;
 
-    if (!currentApiKey) {
-      // Fallback to predefined quotes if API key is not available
+    if (!currentApiKey || !currentApiKey.trim()) {
+      console.warn(`${provider} requires API key, falling back to free quotes`);
+      setError(`${provider} API key missing. Using free quotes.`);
       return getFallbackQuote(mood);
     }
 
