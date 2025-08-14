@@ -167,7 +167,20 @@ export const Home: React.FC = () => {
               <p>
                 {selectedAIProvider === 'free' && selectedImageProvider === 'picsum'
                   ? 'Using Free providers. Upgrade to premium providers for enhanced quality and variety.'
-                  : 'Add API keys in settings for enhanced functionality and better quality content.'}
+                  : 'Add valid API keys in settings for enhanced functionality. Invalid keys will automatically fallback to free content.'}
+              </p>
+            </motion.div>
+          )}
+
+          {(imageError || quoteError) && !isLoading && (
+            <motion.div
+              className="mt-4 text-sm text-white opacity-80"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+            >
+              <p>
+                💡 Tip: Switch to free providers in settings for reliable service without API keys.
               </p>
             </motion.div>
           )}
