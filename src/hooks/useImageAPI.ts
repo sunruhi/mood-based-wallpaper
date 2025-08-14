@@ -11,6 +11,12 @@ export const useImageAPI = (provider: ImageProvider = 'picsum', apiKey?: string)
     setError(null);
 
     try {
+      // Check if API key is required but not provided, fallback to picsum
+      if ((provider === 'pixabay' || provider === 'pexels' || provider === 'unsplash') && (!apiKey || !apiKey.trim())) {
+        console.warn(`${provider} requires API key, falling back to picsum`);
+        return await fetchPicsumImage(mood);
+      }
+
       switch (provider) {
         case 'picsum':
           return await fetchPicsumImage(mood);
@@ -25,7 +31,8 @@ export const useImageAPI = (provider: ImageProvider = 'picsum', apiKey?: string)
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch image';
-      setError(errorMessage);
+      console.error(`Error fetching image from ${provider}:`, err);
+      setError(`${provider} error: ${errorMessage}. Using fallback image.`);
       return getFallbackImage(mood);
     } finally {
       setLoading(false);
