@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Share2, Copy, Download, Twitter, Facebook, Link, Check, X } from 'lucide-react';
+import { Share2, Copy, Download, Twitter, Facebook, Link, Check, X, AlertCircle } from 'lucide-react';
 import { WallpaperData } from '../types';
 
 interface ShareButtonProps {
