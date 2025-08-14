@@ -196,11 +196,28 @@ export const Home: React.FC = () => {
             <LoadingSpinner message="Creating your personalized wallpaper..." />
           )}
 
-          {error && (
-            <ErrorMessage
-              message={error}
-              onRetry={handleRetry}
-            />
+          {(imageError || quoteError) && (
+            <motion.div
+              className="bg-orange-100 border border-orange-400 text-orange-700 px-4 py-3 rounded-xl mb-4 max-w-2xl mx-auto"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-lg">⚠️</span>
+                <div>
+                  <p className="font-medium">Using fallback content</p>
+                  <p className="text-sm">
+                    {imageError && quoteError ?
+                      "External services temporarily unavailable. Using built-in content." :
+                      imageError ?
+                        imageError :
+                        quoteError
+                    }
+                  </p>
+                </div>
+              </div>
+            </motion.div>
           )}
 
           {wallpaperData && !isLoading && !error && (
