@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Settings, Clock, Type } from 'lucide-react';
+import { Settings, Clock, Type, Palette } from 'lucide-react';
 import { MoodCard } from '../components/MoodCard';
 import { ImageDisplay } from '../components/ImageDisplay';
 import { DownloadButton } from '../components/DownloadButton';
@@ -10,6 +10,7 @@ import { ErrorMessage } from '../components/ErrorMessage';
 import { ApiKeySettings } from '../components/ApiKeySettings';
 import { HistoryPanel } from '../components/HistoryPanel';
 import { CustomQuoteInput } from '../components/CustomQuoteInput';
+import { ThemeSelector } from '../components/ThemeSelector';
 import { useImageAPI } from '../hooks/useImageAPI';
 import { useOpenAI } from '../hooks/useOpenAI';
 import { useApiKeys } from '../hooks/useApiKeys';
@@ -17,6 +18,7 @@ import { useWallpaperHistory } from '../hooks/useWallpaperHistory';
 import { MOODS } from '../config/moods';
 import { AI_PROVIDERS } from '../config/aiProviders';
 import { IMAGE_PROVIDERS } from '../config/imageProviders';
+import { DEFAULT_THEME } from '../config/themes';
 import { WallpaperData, Mood, SavedWallpaper } from '../types';
 
 export const Home: React.FC = () => {
@@ -26,7 +28,9 @@ export const Home: React.FC = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [showCustomQuote, setShowCustomQuote] = useState(false);
+  const [showThemeSelector, setShowThemeSelector] = useState(false);
   const [customQuote, setCustomQuote] = useState<{text: string; author?: string} | null>(null);
+  const [selectedTheme, setSelectedTheme] = useState(DEFAULT_THEME);
 
   const { apiKeys, saveApiKeys, hasCurrentImageKey, hasCurrentAIKey, getCurrentAIKey, getCurrentImageKey, selectedAIProvider, selectedImageProvider } = useApiKeys();
   const { fetchImageByMood, loading: imageLoading, error: imageError } = useImageAPI(selectedImageProvider, getCurrentImageKey());
