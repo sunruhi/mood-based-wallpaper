@@ -77,6 +77,28 @@ export const useOpenAI = (apiKey?: string, provider: AIProvider = 'free', azureE
           };
           break;
 
+        case 'meta':
+          endpoint = 'https://api.llama-api.com/chat/completions';
+          headers.Authorization = `Bearer ${currentApiKey}`;
+          body = {
+            model: 'llama3-8b-instruct',
+            messages: [{ role: 'user', content: moodPrompts[mood] }],
+            max_tokens: 100,
+            temperature: 0.8,
+          };
+          break;
+
+        case 'groq':
+          endpoint = 'https://api.groq.com/openai/v1/chat/completions';
+          headers.Authorization = `Bearer ${currentApiKey}`;
+          body = {
+            model: 'llama3-8b-8192',
+            messages: [{ role: 'user', content: moodPrompts[mood] }],
+            max_tokens: 100,
+            temperature: 0.8,
+          };
+          break;
+
         default:
           throw new Error(`Unsupported provider: ${provider}`);
       }
