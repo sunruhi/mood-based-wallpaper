@@ -322,6 +322,13 @@ export const Home: React.FC = () => {
         onToggleFavorite={toggleFavorite}
         onClearHistory={clearHistory}
       />
+
+      {/* Custom Quote Input */}
+      <CustomQuoteInput
+        isOpen={showCustomQuote}
+        onClose={() => setShowCustomQuote(false)}
+        onSave={handleCustomQuoteSave}
+      />
     </div>
   );
 };
