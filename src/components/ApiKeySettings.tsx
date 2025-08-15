@@ -176,17 +176,17 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ type: "spring", damping: 20, stiffness: 300 }}
           >
-            <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col backdrop-blur-sm border border-gray-100">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[95vh] sm:max-h-[90vh] flex flex-col backdrop-blur-sm border border-gray-100 mx-2 sm:mx-0">
               {/* Header */}
-              <div className="relative bg-gradient-to-r from-blue-500 to-purple-600 p-6 rounded-t-2xl">
+              <div className="relative bg-gradient-to-r from-blue-500 to-purple-600 p-4 sm:p-6 rounded-t-2xl">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-white bg-opacity-20 rounded-lg backdrop-blur-sm">
                       <Settings className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-bold text-white">API Settings</h2>
-                      <p className="text-sm text-white opacity-80">Configure your API preferences</p>
+                      <h2 className="text-lg sm:text-xl font-bold text-white">API Settings</h2>
+                      <p className="text-xs sm:text-sm text-white opacity-80">Configure your API preferences</p>
                     </div>
                   </div>
                   <button
@@ -203,18 +203,18 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
               </div>
 
               {/* Content */}
-              <div className="flex-1 p-6 space-y-6 overflow-y-auto">
-                <div className="relative bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-xl border border-blue-100">
+              <div className="flex-1 p-4 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto">
+                <div className="relative bg-gradient-to-r from-blue-50 to-indigo-50 p-3 sm:p-5 rounded-xl border border-blue-100">
                   <div className="flex items-start gap-3">
                     <div className="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
                       <span className="text-white text-sm font-bold">ℹ</span>
                     </div>
                     <div className="text-sm">
-                      <p className="text-gray-700 mb-2 font-medium">
+                      <p className="text-gray-700 mb-2 font-medium text-sm">
                         <span className="text-blue-600 font-semibold">Optional:</span> Add your API keys for enhanced functionality.
                         The app works with fallback content without keys.
                       </p>
-                      <p className="text-gray-600">🔒 Your keys are stored locally and never sent to our servers.</p>
+                      <p className="text-gray-600 text-xs sm:text-sm">🔒 Your keys are stored locally and never sent to our servers.</p>
                     </div>
                   </div>
                 </div>
@@ -223,7 +223,7 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
                 {formKeys.selectedAIProvider === 'free' && (
                   <>
                     {/* Image Provider Selection */}
-                <div className="space-y-4 bg-gray-50 p-5 rounded-xl border border-gray-200">
+                <div className="space-y-4 bg-gray-50 p-3 sm:p-5 rounded-xl border border-gray-200">
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 bg-green-500 rounded-md flex items-center justify-center">
                       <span className="text-white text-xs font-bold">🖼️</span>
@@ -368,7 +368,7 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
                 )}
 
                 {/* AI Provider Selection */}
-                <div className="space-y-4 bg-gray-50 p-5 rounded-xl border border-gray-200">
+                <div className="space-y-4 bg-gray-50 p-3 sm:p-5 rounded-xl border border-gray-200">
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 bg-purple-500 rounded-md flex items-center justify-center">
                       <span className="text-white text-xs font-bold">{selectedProvider.icon}</span>
@@ -526,17 +526,17 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
               )}
 
               {/* Footer */}
-              <div className="flex-shrink-0 flex gap-4 p-6 bg-gray-50 border-t border-gray-200 rounded-b-2xl">
+              <div className="flex-shrink-0 flex flex-col sm:flex-row gap-3 sm:gap-4 p-4 sm:p-6 bg-gray-50 border-t border-gray-200 rounded-b-2xl">
                 <button
                   onClick={onClose}
-                  className="flex-1 px-6 py-3 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-medium shadow-sm"
+                  className="flex-1 px-4 sm:px-6 py-2 sm:py-3 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-medium shadow-sm min-h-[44px]"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSave}
                   disabled={!canSave}
-                  className={`flex-1 px-6 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 font-medium shadow-lg ${
+                  className={`flex-1 px-4 sm:px-6 py-2 sm:py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 font-medium shadow-lg min-h-[44px] ${
                     canSave
                       ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 hover:shadow-xl transform hover:scale-105'
                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -544,7 +544,9 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
                   data-testid="save-keys"
                 >
                   <Save className="w-4 h-4" />
-                  {canSave ? 'Save Settings' : 'API Keys Required'}
+                  <span className="text-sm sm:text-base">
+                    {canSave ? 'Save Settings' : 'API Keys Required'}
+                  </span>
                 </button>
               </div>
             </div>
