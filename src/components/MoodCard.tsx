@@ -24,11 +24,11 @@ export const MoodCard: React.FC<MoodCardProps> = ({ mood, onSelect, isSelected =
       transition={{ duration: 0.3 }}
       data-testid={`mood-card-${mood.id}`}
     >
-      <div className="p-4 h-28 flex flex-col justify-between text-white">
-        <div className="text-2xl mb-1">{mood.icon}</div>
+      <div className="p-3 sm:p-4 h-24 sm:h-28 flex flex-col justify-between text-white">
+        <div className="text-xl sm:text-2xl mb-1">{mood.icon}</div>
         <div>
-          <h3 className="text-lg font-bold mb-1">{mood.label}</h3>
-          <p className="text-xs opacity-90">{mood.description}</p>
+          <h3 className="text-base sm:text-lg font-bold mb-1">{mood.label}</h3>
+          <p className="text-xs opacity-90 leading-tight">{mood.description}</p>
         </div>
       </div>
       
