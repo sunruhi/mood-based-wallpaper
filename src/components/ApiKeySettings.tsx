@@ -170,28 +170,28 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
 
           {/* Modal */}
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-2 sm:p-4 pt-4 sm:pt-4"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ type: "spring", damping: 20, stiffness: 300 }}
           >
-            <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col backdrop-blur-sm border border-gray-100">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[92vh] sm:max-h-[90vh] flex flex-col backdrop-blur-sm border border-gray-100">
               {/* Header */}
-              <div className="relative bg-gradient-to-r from-blue-500 to-purple-600 p-6 rounded-t-2xl">
+              <div className="relative bg-gradient-to-r from-blue-500 to-purple-600 p-4 sm:p-6 rounded-t-2xl flex-shrink-0">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-white bg-opacity-20 rounded-lg backdrop-blur-sm">
-                      <Settings className="w-6 h-6 text-white" />
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="p-1.5 sm:p-2 bg-white bg-opacity-20 rounded-lg backdrop-blur-sm">
+                      <Settings className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                     </div>
-                    <div>
-                      <h2 className="text-xl font-bold text-white">API Settings</h2>
-                      <p className="text-sm text-white opacity-80">Configure your API preferences</p>
+                    <div className="min-w-0 flex-1">
+                      <h2 className="text-base sm:text-xl font-bold text-white truncate">API Settings</h2>
+                      <p className="text-xs sm:text-sm text-white opacity-80 hidden sm:block">Configure your API preferences</p>
                     </div>
                   </div>
                   <button
                     onClick={onClose}
-                    className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-all duration-200 text-white"
+                    className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-all duration-200 text-white flex-shrink-0"
                     data-testid="close-settings"
                   >
                     <X className="w-5 h-5" />
@@ -203,18 +203,18 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
               </div>
 
               {/* Content */}
-              <div className="flex-1 p-6 space-y-6 overflow-y-auto">
-                <div className="relative bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-xl border border-blue-100">
-                  <div className="flex items-start gap-3">
-                    <div className="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm font-bold">ℹ</span>
+              <div className="flex-1 p-3 sm:p-6 space-y-3 sm:space-y-6 overflow-y-auto">
+                <div className="relative bg-gradient-to-r from-blue-50 to-indigo-50 p-3 sm:p-5 rounded-xl border border-blue-100">
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <div className="flex-shrink-0 w-6 h-6 sm:w-8 sm:h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-xs sm:text-sm font-bold">ℹ</span>
                     </div>
                     <div className="text-sm">
-                      <p className="text-gray-700 mb-2 font-medium">
-                        <span className="text-blue-600 font-semibold">Optional:</span> Add your API keys for enhanced functionality.
-                        The app works with fallback content without keys.
+                      <p className="text-gray-700 mb-2 font-medium text-xs sm:text-sm leading-relaxed">
+                        <span className="text-blue-600 font-semibold">Optional:</span> Add API keys for enhanced functionality.
+                        <span className="hidden sm:inline"> The app works with fallback content without keys.</span>
                       </p>
-                      <p className="text-gray-600">🔒 Your keys are stored locally and never sent to our servers.</p>
+                      <p className="text-gray-600 text-xs leading-relaxed">🔒 Keys stored locally, never sent to servers.</p>
                     </div>
                   </div>
                 </div>
@@ -223,9 +223,9 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
                 {formKeys.selectedAIProvider === 'free' && (
                   <>
                     {/* Image Provider Selection */}
-                <div className="space-y-4 bg-gray-50 p-5 rounded-xl border border-gray-200">
+                <div className="space-y-3 sm:space-y-4 bg-gray-50 p-3 sm:p-5 rounded-xl border border-gray-200">
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 bg-green-500 rounded-md flex items-center justify-center">
+                    <div className="w-5 h-5 sm:w-6 sm:h-6 bg-green-500 rounded-md flex items-center justify-center">
                       <span className="text-white text-xs font-bold">🖼️</span>
                     </div>
                     <label className="text-sm font-semibold text-gray-800">
@@ -238,25 +238,25 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
                     <button
                       type="button"
                       onClick={() => setShowImageProviderDropdown(!showImageProviderDropdown)}
-                      className="w-full flex items-center justify-between px-4 py-4 bg-white border border-gray-300 rounded-xl hover:border-green-400 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all shadow-sm hover:shadow-md"
+                      className="w-full flex items-center justify-between px-3 sm:px-4 py-3 sm:py-4 bg-white border border-gray-300 rounded-xl hover:border-green-400 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all shadow-sm hover:shadow-md"
                     >
-                      <div className="flex items-center gap-3">
-                        <div className="text-2xl w-8 h-8 flex items-center justify-center bg-gray-100 rounded-lg">
+                      <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                        <div className="text-lg sm:text-2xl w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center bg-gray-100 rounded-lg flex-shrink-0">
                           {selectedImageProvider.icon}
                         </div>
-                        <div className="text-left">
-                          <div className="font-semibold text-gray-900 flex items-center gap-2">
-                            {selectedImageProvider.name}
+                        <div className="text-left min-w-0 flex-1">
+                          <div className="font-semibold text-gray-900 flex items-center gap-2 text-sm sm:text-base">
+                            <span className="truncate">{selectedImageProvider.name}</span>
                             {selectedImageProvider.isFree && (
-                              <span className="bg-green-100 text-green-600 px-2 py-1 rounded-full text-xs font-medium">
+                              <span className="bg-green-100 text-green-600 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-xs font-medium flex-shrink-0">
                                 FREE
                               </span>
                             )}
                           </div>
-                          <div className="text-sm text-gray-600">{selectedImageProvider.description}</div>
+                          <div className="text-xs sm:text-sm text-gray-600 truncate hidden sm:block">{selectedImageProvider.description}</div>
                         </div>
                       </div>
-                      <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${showImageProviderDropdown ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`w-4 h-4 sm:w-5 sm:h-5 text-gray-400 transition-transform duration-200 flex-shrink-0 ${showImageProviderDropdown ? 'rotate-180' : ''}`} />
                     </button>
 
                     {/* Image Provider Dropdown Menu */}
@@ -368,9 +368,9 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
                 )}
 
                 {/* AI Provider Selection */}
-                <div className="space-y-4 bg-gray-50 p-5 rounded-xl border border-gray-200">
+                <div className="space-y-3 sm:space-y-4 bg-gray-50 p-3 sm:p-5 rounded-xl border border-gray-200">
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 bg-purple-500 rounded-md flex items-center justify-center">
+                    <div className="w-5 h-5 sm:w-6 sm:h-6 bg-purple-500 rounded-md flex items-center justify-center">
                       <span className="text-white text-xs font-bold">{selectedProvider.icon}</span>
                     </div>
                     <label className="text-sm font-semibold text-gray-800">
@@ -383,18 +383,18 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
                     <button
                       type="button"
                       onClick={() => setShowProviderDropdown(!showProviderDropdown)}
-                      className="w-full flex items-center justify-between px-4 py-4 bg-white border border-gray-300 rounded-xl hover:border-purple-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all shadow-sm hover:shadow-md"
+                      className="w-full flex items-center justify-between px-3 sm:px-4 py-3 sm:py-4 bg-white border border-gray-300 rounded-xl hover:border-purple-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all shadow-sm hover:shadow-md"
                     >
-                      <div className="flex items-center gap-3">
-                        <div className="text-2xl w-8 h-8 flex items-center justify-center bg-gray-100 rounded-lg">
+                      <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                        <div className="text-lg sm:text-2xl w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center bg-gray-100 rounded-lg flex-shrink-0">
                           {selectedProvider.icon}
                         </div>
-                        <div className="text-left">
-                          <div className="font-semibold text-gray-900">{selectedProvider.name}</div>
-                          <div className="text-sm text-gray-600">{selectedProvider.description}</div>
+                        <div className="text-left min-w-0 flex-1">
+                          <div className="font-semibold text-gray-900 text-sm sm:text-base truncate">{selectedProvider.name}</div>
+                          <div className="text-xs sm:text-sm text-gray-600 truncate hidden sm:block">{selectedProvider.description}</div>
                         </div>
                       </div>
-                      <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${showProviderDropdown ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`w-4 h-4 sm:w-5 sm:h-5 text-gray-400 transition-transform duration-200 flex-shrink-0 ${showProviderDropdown ? 'rotate-180' : ''}`} />
                     </button>
 
                     {/* Dropdown Menu */}
@@ -526,17 +526,17 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
               )}
 
               {/* Footer */}
-              <div className="flex-shrink-0 flex gap-4 p-6 bg-gray-50 border-t border-gray-200 rounded-b-2xl">
+              <div className="flex-shrink-0 flex flex-col sm:flex-row gap-3 sm:gap-4 p-3 sm:p-6 bg-gray-50 border-t border-gray-200 rounded-b-2xl">
                 <button
                   onClick={onClose}
-                  className="flex-1 px-6 py-3 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-medium shadow-sm"
+                  className="flex-1 px-4 sm:px-6 py-3 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-medium shadow-sm min-h-[48px]"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSave}
                   disabled={!canSave}
-                  className={`flex-1 px-6 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 font-medium shadow-lg ${
+                  className={`flex-1 px-4 sm:px-6 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 font-medium shadow-lg min-h-[48px] ${
                     canSave
                       ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 hover:shadow-xl transform hover:scale-105'
                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -544,7 +544,9 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
                   data-testid="save-keys"
                 >
                   <Save className="w-4 h-4" />
-                  {canSave ? 'Save Settings' : 'API Keys Required'}
+                  <span className="text-sm">
+                    {canSave ? 'Save Settings' : 'API Keys Required'}
+                  </span>
                 </button>
               </div>
             </div>

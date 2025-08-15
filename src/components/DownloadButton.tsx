@@ -29,9 +29,9 @@ export const DownloadButton: React.FC<DownloadButtonProps> = ({ disabled = false
   return (
     <motion.button
       className={`
-        inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all
-        ${disabled 
-          ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+        inline-flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium transition-all min-h-[44px]
+        ${disabled
+          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
           : 'bg-blue-500 text-white hover:bg-blue-600 active:scale-95'
         }
         ${isDownloading ? 'animate-pulse' : ''}
@@ -42,8 +42,10 @@ export const DownloadButton: React.FC<DownloadButtonProps> = ({ disabled = false
       whileTap={disabled ? {} : { scale: 0.95 }}
       data-testid="download-button"
     >
-      <Download size={20} className={isDownloading ? 'animate-spin' : ''} />
-      {isDownloading ? 'Downloading...' : 'Download Wallpaper'}
+      <Download size={18} className={`${isDownloading ? 'animate-spin' : ''} sm:w-5 sm:h-5`} />
+      <span className="text-sm sm:text-base">
+        {isDownloading ? 'Downloading...' : 'Download Wallpaper'}
+      </span>
     </motion.button>
   );
 };

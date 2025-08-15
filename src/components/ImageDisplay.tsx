@@ -47,7 +47,7 @@ export const ImageDisplay: React.FC<ImageDisplayProps> = ({ image, quote, isLoad
   return (
     <motion.div
       id="wallpaper-canvas"
-      className="relative w-full h-64 md:h-96 rounded-lg overflow-hidden shadow-lg"
+      className="relative w-full h-48 sm:h-64 md:h-96 rounded-lg overflow-hidden shadow-lg"
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5 }}
@@ -61,9 +61,9 @@ export const ImageDisplay: React.FC<ImageDisplayProps> = ({ image, quote, isLoad
       />
 
       {/* Quote overlay */}
-      <div className={`absolute inset-0 flex ${getPositionClasses()} p-6`}>
+      <div className={`absolute inset-0 flex ${getPositionClasses()} p-3 sm:p-4 md:p-6`}>
         <motion.div
-          className="max-w-2xl"
+          className="max-w-xs sm:max-w-lg md:max-w-2xl w-full"
           style={{
             background: isGradient ? theme.backgroundColor : theme.backgroundColor,
             borderRadius: `${theme.borderRadius}px`,
@@ -80,19 +80,19 @@ export const ImageDisplay: React.FC<ImageDisplayProps> = ({ image, quote, isLoad
           transition={{ delay: 0.3, duration: 0.5 }}
         >
           <blockquote
+            className="text-sm sm:text-base md:text-lg lg:text-xl"
             style={{
-              fontSize: theme.fontSize.quote,
               fontWeight: theme.fontWeight.quote,
-              marginBottom: quote.author ? '1rem' : '0',
-              lineHeight: '1.4'
+              marginBottom: quote.author ? '0.5rem' : '0',
+              lineHeight: '1.3'
             }}
           >
             "{quote.text}"
           </blockquote>
           {quote.author && (
             <cite
+              className="text-xs sm:text-sm md:text-base"
               style={{
-                fontSize: theme.fontSize.author,
                 fontWeight: theme.fontWeight.author,
                 opacity: 0.9,
                 fontStyle: 'normal'

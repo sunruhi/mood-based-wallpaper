@@ -147,7 +147,7 @@ export const Home: React.FC = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Action Buttons */}
         <motion.div
-          className="fixed top-4 right-4 z-30 flex gap-3"
+          className="fixed top-4 right-4 z-30 flex flex-col sm:flex-row gap-2 sm:gap-3"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.5 }}
@@ -155,23 +155,23 @@ export const Home: React.FC = () => {
           {/* Theme Button */}
           <button
             onClick={() => setShowThemeSelector(true)}
-            className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-opacity-30 transition-all duration-200 shadow-lg"
+            className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-2 sm:p-3 rounded-full hover:bg-opacity-30 transition-all duration-200 shadow-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
             data-testid="theme-button"
             title="Choose Theme"
           >
-            <Palette className="w-5 h-5" />
+            <Palette className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
 
           {/* Custom Quote Button */}
           <button
             onClick={() => setShowCustomQuote(true)}
-            className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-opacity-30 transition-all duration-200 shadow-lg"
+            className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-2 sm:p-3 rounded-full hover:bg-opacity-30 transition-all duration-200 shadow-lg min-h-[44px] min-w-[44px] flex items-center justify-center relative"
             data-testid="custom-quote-button"
             title="Add Custom Quote"
           >
-            <Type className="w-5 h-5" />
+            <Type className="w-4 h-4 sm:w-5 sm:h-5" />
             {customQuote && (
-              <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center">
                 ✓
               </span>
             )}
@@ -180,12 +180,12 @@ export const Home: React.FC = () => {
           {/* History Button */}
           <button
             onClick={() => setShowHistory(true)}
-            className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-opacity-30 transition-all duration-200 shadow-lg relative"
+            className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-2 sm:p-3 rounded-full hover:bg-opacity-30 transition-all duration-200 shadow-lg relative min-h-[44px] min-w-[44px] flex items-center justify-center"
             data-testid="history-button"
           >
-            <Clock className="w-5 h-5" />
+            <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
             {totalCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center">
                 {totalCount > 9 ? '9+' : totalCount}
               </span>
             )}
@@ -194,10 +194,10 @@ export const Home: React.FC = () => {
           {/* Settings Button */}
           <button
             onClick={() => setShowSettings(true)}
-            className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-opacity-30 transition-all duration-200 shadow-lg"
+            className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-2 sm:p-3 rounded-full hover:bg-opacity-30 transition-all duration-200 shadow-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
             data-testid="settings-button"
           >
-            <Settings className="w-5 h-5" />
+            <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </motion.div>
 
@@ -208,10 +208,10 @@ export const Home: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold text-white mb-4 px-4">
             Mood Wallpaper Generator
           </h1>
-          <p className="text-xl text-white opacity-90">
+          <p className="text-lg sm:text-xl text-white opacity-90 px-4">
             Select your mood and get a personalized wallpaper with an inspiring quote
           </p>
 
@@ -222,15 +222,15 @@ export const Home: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
           >
-            <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-2">
-              <span className="text-lg">{AI_PROVIDERS[selectedAIProvider]?.icon || '🤖'}</span>
+            <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-full px-3 sm:px-4 py-2 flex items-center gap-2 mx-2">
+              <span className="text-base sm:text-lg">{AI_PROVIDERS[selectedAIProvider]?.icon || '🤖'}</span>
               {(selectedAIProvider === 'free' && selectedImageProvider !== 'picsum') && (
-                <span className="text-lg">{IMAGE_PROVIDERS[selectedImageProvider]?.icon || '🖼️'}</span>
+                <span className="text-base sm:text-lg">{IMAGE_PROVIDERS[selectedImageProvider]?.icon || '🖼️'}</span>
               )}
-              <span className="text-white text-sm font-medium">
+              <span className="text-white text-xs sm:text-sm font-medium">
                 Powered by {AI_PROVIDERS[selectedAIProvider]?.name || 'AI'}
                 {(selectedAIProvider === 'free' && selectedImageProvider !== 'picsum') && (
-                  <span> + {IMAGE_PROVIDERS[selectedImageProvider]?.name || 'Images'}</span>
+                  <span className="hidden sm:inline"> + {IMAGE_PROVIDERS[selectedImageProvider]?.name || 'Images'}</span>
                 )}
               </span>
             </div>
@@ -280,23 +280,79 @@ export const Home: React.FC = () => {
 
         {/* Mood Selection */}
         <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-12 max-w-7xl mx-auto"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-6 sm:mb-12 max-w-7xl mx-auto"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          {Object.values(MOODS).map((mood) => (
-            <MoodCard
-              key={mood.id}
-              mood={mood}
-              onSelect={handleMoodSelect}
-              isSelected={selectedMood === mood.id}
-            />
+          {Object.values(MOODS).map((mood, index) => (
+            <div key={mood.id} className="flex flex-col">
+              <MoodCard
+                mood={mood}
+                onSelect={handleMoodSelect}
+                isSelected={selectedMood === mood.id}
+              />
+
+              {/* Mobile: Show content below selected card */}
+              {selectedMood === mood.id && (
+                <div className="sm:hidden mt-4">
+                  {isLoading && (
+                    <LoadingSpinner message="Creating your personalized wallpaper..." />
+                  )}
+
+                  {(imageError || quoteError) && (
+                    <motion.div
+                      className="bg-orange-100 border border-orange-400 text-orange-700 px-3 py-2 rounded-xl mb-3"
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-base">⚠️</span>
+                        <div>
+                          <p className="font-medium text-sm">Using fallback content</p>
+                          <p className="text-xs">
+                            {imageError && quoteError ?
+                              "Services unavailable. Using built-in content." :
+                              imageError ?
+                                "Image service unavailable" :
+                                "Quote service unavailable"
+                            }
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {wallpaperData && !isLoading && !error && (
+                    <motion.div
+                      className="space-y-4"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <ImageDisplay
+                        image={wallpaperData.image}
+                        quote={wallpaperData.quote}
+                        themeId={selectedTheme}
+                      />
+
+                      <div className="flex justify-center">
+                        <DownloadButton
+                          mood={wallpaperData.mood}
+                          disabled={isLoading}
+                        />
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
+              )}
+            </div>
           ))}
         </motion.div>
 
-        {/* Content Area */}
-        <div className="max-w-4xl mx-auto">
+        {/* Desktop Content Area */}
+        <div className="hidden sm:block max-w-4xl mx-auto">
           {isLoading && (
             <LoadingSpinner message="Creating your personalized wallpaper..." />
           )}
@@ -337,7 +393,7 @@ export const Home: React.FC = () => {
                 quote={wallpaperData.quote}
                 themeId={selectedTheme}
               />
-              
+
               <div className="flex justify-center">
                 <DownloadButton
                   mood={wallpaperData.mood}
@@ -358,6 +414,18 @@ export const Home: React.FC = () => {
             </motion.div>
           )}
         </div>
+
+        {/* Mobile: Show message when no mood selected */}
+        {!selectedMood && !isLoading && (
+          <motion.div
+            className="sm:hidden text-center text-white mt-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            <p className="text-base">Choose a mood above to get started</p>
+          </motion.div>
+        )}
       </div>
 
       {/* API Key Settings Modal */}

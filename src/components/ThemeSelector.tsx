@@ -41,28 +41,28 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
 
   const renderThemePreview = (theme: ThemeConfig) => {
     const isGradient = theme.backgroundColor.includes('gradient');
-    
+
     return (
-      <div className="relative w-24 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-md overflow-hidden">
-        <div 
+      <div className="relative w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg overflow-hidden shadow-sm">
+        <div
           className={`absolute inset-0 flex ${getTextPositionStyle(theme.textPosition)} p-2`}
         >
           <div
             style={{
               background: isGradient ? theme.backgroundColor : theme.backgroundColor,
               borderRadius: theme.borderRadius,
-              padding: '4px 8px',
+              padding: '6px 10px',
               border: theme.borderConfig.enabled ? `${theme.borderConfig.width}px solid ${theme.borderConfig.color}` : 'none',
               textAlign: theme.textAlign,
               color: theme.textColor,
-              fontSize: '0.5rem',
+              fontSize: '0.6rem',
               fontWeight: theme.fontWeight.quote,
               ...(theme.shadowConfig.enabled && {
                 textShadow: `0 0 ${theme.shadowConfig.blur}px ${theme.shadowConfig.color}`
               })
             }}
           >
-            Quote
+            "Quote"
           </div>
         </div>
       </div>
@@ -74,24 +74,24 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+        className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start sm:items-center justify-center p-2 sm:p-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
       >
         <motion.div
-          className="bg-white rounded-lg w-full max-w-2xl overflow-hidden"
+          className="bg-white rounded-lg w-full max-w-2xl overflow-hidden mt-2 sm:mt-0"
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b">
-            <div className="flex items-center gap-3">
-              <Palette className="text-purple-500" size={24} />
-              <h2 className="text-xl font-bold text-gray-800">Choose Theme</h2>
+          <div className="flex items-center justify-between p-4 sm:p-6 border-b">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Palette className="text-purple-500" size={20} />
+              <h2 className="text-lg sm:text-xl font-bold text-gray-800">Choose Theme</h2>
             </div>
             <button
               className="text-gray-500 hover:text-gray-700 p-1"
@@ -102,32 +102,34 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
           </div>
 
           {/* Content */}
-          <div className="p-6 max-h-96 overflow-y-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="p-4 sm:p-6 max-h-[70vh] sm:max-h-96 overflow-y-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               {Object.values(THEMES).map((theme) => (
                 <motion.div
                   key={theme.id}
                   className={`
                     border-2 rounded-lg p-4 cursor-pointer transition-all duration-200
-                    ${selectedTheme === theme.id 
-                      ? 'border-purple-500 bg-purple-50' 
-                      : 'border-gray-200 hover:border-purple-300 hover:bg-gray-50'
+                    ${selectedTheme === theme.id
+                      ? 'border-purple-500 bg-purple-50 shadow-md'
+                      : 'border-gray-200 hover:border-purple-300 hover:bg-gray-50 hover:shadow-sm'
                     }
                   `}
                   onClick={() => handleThemeSelect(theme.id)}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <div className="flex items-start gap-3">
+                  <div className="flex flex-col sm:flex-row items-center sm:items-start gap-3">
                     {/* Preview */}
-                    <div className="flex-shrink-0">
-                      {renderThemePreview(theme)}
+                    <div className="flex-shrink-0 w-full sm:w-auto flex justify-center sm:justify-start">
+                      <div className="w-24 h-16 sm:w-24 sm:h-16">
+                        {renderThemePreview(theme)}
+                      </div>
                     </div>
 
                     {/* Info */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold text-gray-800">{theme.name}</h3>
+                    <div className="flex-1 min-w-0 text-center sm:text-left">
+                      <div className="flex items-center justify-center sm:justify-start gap-2 mb-2">
+                        <h3 className="font-semibold text-gray-800 text-base">{theme.name}</h3>
                         {selectedTheme === theme.id && (
                           <Check size={16} className="text-purple-500" />
                         )}
@@ -143,12 +145,12 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
           </div>
 
           {/* Footer */}
-          <div className="flex justify-end gap-3 p-6 border-t bg-gray-50">
+          <div className="flex justify-center sm:justify-end gap-3 p-4 sm:p-6 border-t bg-gray-50">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+              className="px-6 py-3 text-gray-600 border border-gray-300 rounded-lg hover:bg-white hover:border-gray-400 transition-all duration-200 min-h-[44px] font-medium shadow-sm"
             >
-              Cancel
+              Close
             </button>
           </div>
         </motion.div>
