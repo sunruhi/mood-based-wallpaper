@@ -280,23 +280,79 @@ export const Home: React.FC = () => {
 
         {/* Mood Selection */}
         <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-12 max-w-7xl mx-auto"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-6 sm:mb-12 max-w-7xl mx-auto"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          {Object.values(MOODS).map((mood) => (
-            <MoodCard
-              key={mood.id}
-              mood={mood}
-              onSelect={handleMoodSelect}
-              isSelected={selectedMood === mood.id}
-            />
+          {Object.values(MOODS).map((mood, index) => (
+            <div key={mood.id} className="flex flex-col">
+              <MoodCard
+                mood={mood}
+                onSelect={handleMoodSelect}
+                isSelected={selectedMood === mood.id}
+              />
+
+              {/* Mobile: Show content below selected card */}
+              {selectedMood === mood.id && (
+                <div className="sm:hidden mt-4">
+                  {isLoading && (
+                    <LoadingSpinner message="Creating your personalized wallpaper..." />
+                  )}
+
+                  {(imageError || quoteError) && (
+                    <motion.div
+                      className="bg-orange-100 border border-orange-400 text-orange-700 px-3 py-2 rounded-xl mb-3"
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-base">⚠️</span>
+                        <div>
+                          <p className="font-medium text-sm">Using fallback content</p>
+                          <p className="text-xs">
+                            {imageError && quoteError ?
+                              "Services unavailable. Using built-in content." :
+                              imageError ?
+                                "Image service unavailable" :
+                                "Quote service unavailable"
+                            }
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {wallpaperData && !isLoading && !error && (
+                    <motion.div
+                      className="space-y-4"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <ImageDisplay
+                        image={wallpaperData.image}
+                        quote={wallpaperData.quote}
+                        themeId={selectedTheme}
+                      />
+
+                      <div className="flex justify-center">
+                        <DownloadButton
+                          mood={wallpaperData.mood}
+                          disabled={isLoading}
+                        />
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
+              )}
+            </div>
           ))}
         </motion.div>
 
-        {/* Content Area */}
-        <div className="max-w-4xl mx-auto">
+        {/* Desktop Content Area */}
+        <div className="hidden sm:block max-w-4xl mx-auto">
           {isLoading && (
             <LoadingSpinner message="Creating your personalized wallpaper..." />
           )}
@@ -337,7 +393,7 @@ export const Home: React.FC = () => {
                 quote={wallpaperData.quote}
                 themeId={selectedTheme}
               />
-              
+
               <div className="flex justify-center">
                 <DownloadButton
                   mood={wallpaperData.mood}
@@ -358,6 +414,18 @@ export const Home: React.FC = () => {
             </motion.div>
           )}
         </div>
+
+        {/* Mobile: Show message when no mood selected */}
+        {!selectedMood && !isLoading && (
+          <motion.div
+            className="sm:hidden text-center text-white mt-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            <p className="text-base">Choose a mood above to get started</p>
+          </motion.div>
+        )}
       </div>
 
       {/* API Key Settings Modal */}
