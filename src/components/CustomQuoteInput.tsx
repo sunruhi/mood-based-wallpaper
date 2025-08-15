@@ -46,24 +46,24 @@ export const CustomQuoteInput: React.FC<CustomQuoteInputProps> = ({
 
   return (
     <motion.div
-      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start sm:items-center justify-center p-2 sm:p-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={handleClose}
     >
       <motion.div
-        className="bg-white rounded-lg w-full max-w-md overflow-hidden"
+        className="bg-white rounded-lg w-full max-w-md overflow-hidden mt-2 sm:mt-0"
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b">
-          <div className="flex items-center gap-3">
-            <Type className="text-blue-500" size={24} />
-            <h2 className="text-xl font-bold text-gray-800">Custom Quote</h2>
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Type className="text-blue-500" size={20} />
+            <h2 className="text-lg sm:text-xl font-bold text-gray-800">Custom Quote</h2>
           </div>
           <button
             className="text-gray-500 hover:text-gray-700 p-1"
@@ -74,7 +74,7 @@ export const CustomQuoteInput: React.FC<CustomQuoteInputProps> = ({
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-4">
+        <div className="p-4 sm:p-6 space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Quote *
@@ -86,7 +86,7 @@ export const CustomQuoteInput: React.FC<CustomQuoteInputProps> = ({
                 setError('');
               }}
               placeholder="Enter your custom quote here..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm sm:text-base"
               rows={4}
               maxLength={200}
             />
@@ -109,25 +109,25 @@ export const CustomQuoteInput: React.FC<CustomQuoteInputProps> = ({
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
               placeholder="Quote author"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
               maxLength={50}
             />
           </div>
 
           {/* Actions */}
-          <div className="flex gap-3 pt-4">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4">
             <button
               onClick={handleClose}
-              className="flex-1 px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+              className="flex-1 px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors min-h-[44px]"
             >
               Cancel
             </button>
             <button
               onClick={handleSave}
-              className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
+              className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors flex items-center justify-center gap-2 min-h-[44px]"
             >
               <Check size={16} />
-              Use Quote
+              <span className="text-sm sm:text-base">Use Quote</span>
             </button>
           </div>
         </div>
