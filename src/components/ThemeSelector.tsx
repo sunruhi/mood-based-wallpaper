@@ -41,28 +41,28 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
 
   const renderThemePreview = (theme: ThemeConfig) => {
     const isGradient = theme.backgroundColor.includes('gradient');
-    
+
     return (
-      <div className="relative w-24 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-md overflow-hidden">
-        <div 
+      <div className="relative w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg overflow-hidden shadow-sm">
+        <div
           className={`absolute inset-0 flex ${getTextPositionStyle(theme.textPosition)} p-2`}
         >
           <div
             style={{
               background: isGradient ? theme.backgroundColor : theme.backgroundColor,
               borderRadius: theme.borderRadius,
-              padding: '4px 8px',
+              padding: '6px 10px',
               border: theme.borderConfig.enabled ? `${theme.borderConfig.width}px solid ${theme.borderConfig.color}` : 'none',
               textAlign: theme.textAlign,
               color: theme.textColor,
-              fontSize: '0.5rem',
+              fontSize: '0.6rem',
               fontWeight: theme.fontWeight.quote,
               ...(theme.shadowConfig.enabled && {
                 textShadow: `0 0 ${theme.shadowConfig.blur}px ${theme.shadowConfig.color}`
               })
             }}
           >
-            Quote
+            "Quote"
           </div>
         </div>
       </div>
@@ -102,39 +102,39 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
           </div>
 
           {/* Content */}
-          <div className="p-4 sm:p-6 max-h-80 sm:max-h-96 overflow-y-auto">
-            <div className="grid grid-cols-1 gap-3 sm:gap-4">
+          <div className="p-4 sm:p-6 max-h-[70vh] sm:max-h-96 overflow-y-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               {Object.values(THEMES).map((theme) => (
                 <motion.div
                   key={theme.id}
                   className={`
-                    border-2 rounded-lg p-3 sm:p-4 cursor-pointer transition-all duration-200
+                    border-2 rounded-lg p-4 cursor-pointer transition-all duration-200
                     ${selectedTheme === theme.id
-                      ? 'border-purple-500 bg-purple-50'
-                      : 'border-gray-200 hover:border-purple-300 hover:bg-gray-50'
+                      ? 'border-purple-500 bg-purple-50 shadow-md'
+                      : 'border-gray-200 hover:border-purple-300 hover:bg-gray-50 hover:shadow-sm'
                     }
                   `}
                   onClick={() => handleThemeSelect(theme.id)}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <div className="flex items-start gap-2 sm:gap-3">
+                  <div className="flex flex-col sm:flex-row items-center sm:items-start gap-3">
                     {/* Preview */}
-                    <div className="flex-shrink-0">
-                      <div className="w-16 h-10 sm:w-24 sm:h-16">
+                    <div className="flex-shrink-0 w-full sm:w-auto flex justify-center sm:justify-start">
+                      <div className="w-24 h-16 sm:w-24 sm:h-16">
                         {renderThemePreview(theme)}
                       </div>
                     </div>
 
                     {/* Info */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold text-gray-800 text-sm sm:text-base">{theme.name}</h3>
+                    <div className="flex-1 min-w-0 text-center sm:text-left">
+                      <div className="flex items-center justify-center sm:justify-start gap-2 mb-2">
+                        <h3 className="font-semibold text-gray-800 text-base">{theme.name}</h3>
                         {selectedTheme === theme.id && (
-                          <Check size={14} className="text-purple-500 sm:w-4 sm:h-4" />
+                          <Check size={16} className="text-purple-500" />
                         )}
                       </div>
-                      <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                      <p className="text-sm text-gray-600 leading-relaxed">
                         {theme.description}
                       </p>
                     </div>
@@ -145,12 +145,12 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
           </div>
 
           {/* Footer */}
-          <div className="flex justify-end gap-3 p-4 sm:p-6 border-t bg-gray-50">
+          <div className="flex justify-center sm:justify-end gap-3 p-4 sm:p-6 border-t bg-gray-50">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors min-h-[44px]"
+              className="px-6 py-3 text-gray-600 border border-gray-300 rounded-lg hover:bg-white hover:border-gray-400 transition-all duration-200 min-h-[44px] font-medium shadow-sm"
             >
-              Cancel
+              Close
             </button>
           </div>
         </motion.div>
