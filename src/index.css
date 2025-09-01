@@ -1,3 +1,95 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom styles for Ionic integration */
+.mood-card {
+  --background: transparent;
+  --color: white;
+  margin: 0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.mood-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.mood-card.selected-mood {
+  transform: scale(1.05);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.5);
+}
+
+.download-button {
+  --border-radius: 12px;
+  --padding-start: 24px;
+  --padding-end: 24px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  margin: 16px auto;
+  max-width: 280px;
+}
+
+/* Ensure proper spacing and layout */
+ion-content {
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+}
+
+/* Custom gradient background class */
+.gradient-background {
+  background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 50%, #EF4444 100%);
+}
+
+/* Smooth animations for all interactive elements */
+ion-card, ion-button, ion-fab-button {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Enhanced ripple effect */
+ion-ripple-effect {
+  --ripple-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Custom styling for FAB */
+ion-fab-button {
+  --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+ion-fab-button:hover {
+  --box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  transform: scale(1.05);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .mood-card {
+    margin-bottom: 8px;
+  }
+  
+  ion-fab {
+    --ion-safe-area-bottom: 16px;
+  }
+}
+
+/* Ensure text is readable on gradient backgrounds */
+ion-toolbar.gradient-background ion-title {
+  color: white !important;
+  font-weight: 600;
+}
+
+/* Custom modal styling */
+ion-modal {
+  --border-radius: 16px;
+  --box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Loading spinner customization */
+ion-loading {
+  --spinner-color: #8B5CF6;
+  --background: rgba(255, 255, 255, 0.9);
+  --color: #374151;
+}

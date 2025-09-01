@@ -1,6 +1,36 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Settings, Eye, EyeOff, Key, X, Save, ExternalLink, ChevronDown } from 'lucide-react';
+import {
+  IonModal,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonButton,
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonInput,
+  IonSelect,
+  IonSelectOption,
+  IonCard,
+  IonCardContent,
+  IonText,
+  IonChip,
+  IonNote,
+  IonList,
+  IonButtons
+} from '@ionic/react';
+import { 
+  settings, 
+  eye, 
+  eyeOff, 
+  key, 
+  close, 
+  save, 
+  openOutline, 
+  chevronDown 
+} from 'ionicons/icons';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { ApiKeys, AIProvider, ImageProvider } from '../types';
 import { AI_PROVIDERS, getProviderConfig, getProviderList } from '../config/aiProviders';
 import { IMAGE_PROVIDERS, getImageProviderConfig, getImageProviderList } from '../config/imageProviders';
@@ -19,8 +49,6 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
   isOpen
 }) => {
   const [formKeys, setFormKeys] = useState<ApiKeys>(apiKeys);
-  const [showProviderDropdown, setShowProviderDropdown] = useState(false);
-  const [showImageProviderDropdown, setShowImageProviderDropdown] = useState(false);
   const [showApiKeys, setShowApiKeys] = useState<Record<string, boolean>>({
     openaiKey: false,
     anthropicKey: false,
@@ -33,8 +61,13 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
     unsplashKey: false
   });
 
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const imageDropdownRef = useRef<HTMLDivElement>(null);
+  const triggerHaptic = async () => {
+    try {
+      await Haptics.impact({ style: ImpactStyle.Light });
+    } catch (error) {
+      // Haptics not available on web
+    }
+  };
 
   // Update form keys when modal opens to reflect current apiKeys
   useEffect(() => {
@@ -43,27 +76,8 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
     }
   }, [isOpen, apiKeys]);
 
-  // Close dropdowns when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowProviderDropdown(false);
-      }
-      if (imageDropdownRef.current && !imageDropdownRef.current.contains(event.target as Node)) {
-        setShowImageProviderDropdown(false);
-      }
-    };
-
-    if (showProviderDropdown || showImageProviderDropdown) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showProviderDropdown, showImageProviderDropdown]);
-
   const handleSave = () => {
+    triggerHaptic();
     // Validate that paid AI providers have API keys
     if (formKeys.selectedAIProvider !== 'free') {
       const keyField = `${formKeys.selectedAIProvider}Key` as keyof ApiKeys;
@@ -92,6 +106,11 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
     onClose();
   };
 
+  const handleClose = () => {
+    triggerHaptic();
+    onClose();
+  };
+
   const handleInputChange = (field: keyof ApiKeys, value: string) => {
     setFormKeys(prev => {
       const updated = { ...prev, [field]: value };
@@ -109,16 +128,17 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
   };
 
   const handleProviderSelect = (providerId: AIProvider) => {
+    triggerHaptic();
     setFormKeys(prev => ({ ...prev, selectedAIProvider: providerId }));
-    setShowProviderDropdown(false);
   };
 
   const handleImageProviderSelect = (providerId: ImageProvider) => {
+    triggerHaptic();
     setFormKeys(prev => ({ ...prev, selectedImageProvider: providerId }));
-    setShowImageProviderDropdown(false);
   };
 
   const toggleKeyVisibility = (keyName: string) => {
+    triggerHaptic();
     setShowApiKeys(prev => ({ ...prev, [keyName]: !prev[keyName] }));
   };
 
@@ -155,404 +175,229 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
   const providerList = getProviderList();
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            className="fixed inset-0 bg-black bg-opacity-50 z-40"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            data-testid="settings-backdrop"
-          />
+    <IonModal isOpen={isOpen} onDidDismiss={handleClose}>
+      <IonHeader>
+        <IonToolbar color="primary">
+          <IonTitle>API Settings</IonTitle>
+          <IonButtons slot="end">
+            <IonButton fill="clear" onClick={handleClose} data-testid="close-settings">
+              <IonIcon icon={close} />
+            </IonButton>
+          </IonButtons>
+        </IonToolbar>
+      </IonHeader>
 
-          {/* Modal */}
-          <motion.div
-            className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-2 sm:p-4 pt-4 sm:pt-4"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ type: "spring", damping: 20, stiffness: 300 }}
-          >
-            <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[92vh] sm:max-h-[90vh] flex flex-col backdrop-blur-sm border border-gray-100">
-              {/* Header */}
-              <div className="relative bg-gradient-to-r from-blue-500 to-purple-600 p-4 sm:p-6 rounded-t-2xl flex-shrink-0">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 sm:gap-3">
-                    <div className="p-1.5 sm:p-2 bg-white bg-opacity-20 rounded-lg backdrop-blur-sm">
-                      <Settings className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <h2 className="text-base sm:text-xl font-bold text-white truncate">API Settings</h2>
-                      <p className="text-xs sm:text-sm text-white opacity-80 hidden sm:block">Configure your API preferences</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={onClose}
-                    className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-all duration-200 text-white flex-shrink-0"
-                    data-testid="close-settings"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-                {/* Decorative elements */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full -translate-y-16 translate-x-16"></div>
-                <div className="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-5 rounded-full translate-y-12 -translate-x-12"></div>
+      <IonContent>
+        {/* Info Card */}
+        <IonCard className="mx-4 mt-4">
+          <IonCardContent>
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-white text-sm font-bold">ℹ</span>
               </div>
-
-              {/* Content */}
-              <div className="flex-1 p-3 sm:p-6 space-y-3 sm:space-y-6 overflow-y-auto">
-                <div className="relative bg-gradient-to-r from-blue-50 to-indigo-50 p-3 sm:p-5 rounded-xl border border-blue-100">
-                  <div className="flex items-start gap-2 sm:gap-3">
-                    <div className="flex-shrink-0 w-6 h-6 sm:w-8 sm:h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                      <span className="text-white text-xs sm:text-sm font-bold">ℹ</span>
-                    </div>
-                    <div className="text-sm">
-                      <p className="text-gray-700 mb-2 font-medium text-xs sm:text-sm leading-relaxed">
-                        <span className="text-blue-600 font-semibold">Optional:</span> Add API keys for enhanced functionality.
-                        <span className="hidden sm:inline"> The app works with fallback content without keys.</span>
-                      </p>
-                      <p className="text-gray-600 text-xs leading-relaxed">🔒 Keys stored locally, never sent to servers.</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Image Provider Selection - Only show when Free AI is selected */}
-                {formKeys.selectedAIProvider === 'free' && (
-                  <>
-                    {/* Image Provider Selection */}
-                <div className="space-y-3 sm:space-y-4 bg-gray-50 p-3 sm:p-5 rounded-xl border border-gray-200">
-                  <div className="flex items-center gap-2">
-                    <div className="w-5 h-5 sm:w-6 sm:h-6 bg-green-500 rounded-md flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">🖼️</span>
-                    </div>
-                    <label className="text-sm font-semibold text-gray-800">
-                      Image Provider
-                    </label>
-                  </div>
-
-                  {/* Image Provider Dropdown */}
-                  <div className="relative" ref={imageDropdownRef}>
-                    <button
-                      type="button"
-                      onClick={() => setShowImageProviderDropdown(!showImageProviderDropdown)}
-                      className="w-full flex items-center justify-between px-3 sm:px-4 py-3 sm:py-4 bg-white border border-gray-300 rounded-xl hover:border-green-400 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all shadow-sm hover:shadow-md"
-                    >
-                      <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                        <div className="text-lg sm:text-2xl w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center bg-gray-100 rounded-lg flex-shrink-0">
-                          {selectedImageProvider.icon}
-                        </div>
-                        <div className="text-left min-w-0 flex-1">
-                          <div className="font-semibold text-gray-900 flex items-center gap-2 text-sm sm:text-base">
-                            <span className="truncate">{selectedImageProvider.name}</span>
-                            {selectedImageProvider.isFree && (
-                              <span className="bg-green-100 text-green-600 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-xs font-medium flex-shrink-0">
-                                FREE
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-xs sm:text-sm text-gray-600 truncate hidden sm:block">{selectedImageProvider.description}</div>
-                        </div>
-                      </div>
-                      <ChevronDown className={`w-4 h-4 sm:w-5 sm:h-5 text-gray-400 transition-transform duration-200 flex-shrink-0 ${showImageProviderDropdown ? 'rotate-180' : ''}`} />
-                    </button>
-
-                    {/* Image Provider Dropdown Menu */}
-                    <AnimatePresence>
-                      {showImageProviderDropdown && (
-                        <motion.div
-                          initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                          transition={{ duration: 0.2 }}
-                          className="absolute top-full left-0 right-0 z-20 mt-2 bg-white border border-gray-200 rounded-xl shadow-xl max-h-64 overflow-y-auto backdrop-blur-sm"
-                        >
-                          {imageProviderList.map((provider, index) => (
-                            <motion.button
-                              key={provider.id}
-                              type="button"
-                              onClick={() => handleImageProviderSelect(provider.id)}
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: index * 0.05 }}
-                              className={`w-full flex items-center gap-4 px-4 py-4 text-left transition-all duration-200 ${
-                                formKeys.selectedImageProvider === provider.id
-                                  ? 'bg-gradient-to-r from-green-50 to-blue-50 text-green-600 border-l-4 border-green-500'
-                                  : 'text-gray-900 hover:bg-gray-50'
-                              } ${index === 0 ? 'rounded-t-xl' : ''} ${index === imageProviderList.length - 1 ? 'rounded-b-xl' : ''}`}
-                            >
-                              <div className="text-2xl w-10 h-10 flex items-center justify-center bg-gray-100 rounded-lg">
-                                {provider.icon}
-                              </div>
-                              <div className="flex-1">
-                                <div className="font-semibold flex items-center gap-2">
-                                  {provider.name}
-                                  {provider.isFree && (
-                                    <span className="bg-green-100 text-green-600 px-2 py-1 rounded-full text-xs font-medium">
-                                      FREE
-                                    </span>
-                                  )}
-                                </div>
-                                <div className="text-sm text-gray-500">{provider.description}</div>
-                              </div>
-                              {formKeys.selectedImageProvider === provider.id && (
-                                <div className="flex items-center gap-2">
-                                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                  <span className="text-xs font-medium text-green-600">Active</span>
-                                </div>
-                              )}
-                            </motion.button>
-                          ))}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                </div>
-
-                {/* Dynamic Image API Key Field */}
-                {selectedImageProvider.requiresApiKey && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="space-y-4 bg-white p-5 rounded-xl border border-gray-200 shadow-sm"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="text-lg">{selectedImageProvider.icon}</div>
-                        <label className="text-sm font-semibold text-gray-800">
-                          {selectedImageProvider.name} API Key
-                        </label>
-                      </div>
-                      {selectedImageProvider.getKeyUrl && (
-                        <a
-                          href={selectedImageProvider.getKeyUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-green-500 hover:text-green-600 text-sm flex items-center gap-1 font-medium transition-colors bg-green-50 px-3 py-1 rounded-lg hover:bg-green-100"
-                        >
-                          Get Key <ExternalLink className="w-3 h-3" />
-                        </a>
-                      )}
-                    </div>
-
-                    <div className="relative">
-                      <Key className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <input
-                        type={showApiKeys[`${selectedImageProvider.id}Key`] ? 'text' : 'password'}
-                        value={formKeys[`${selectedImageProvider.id}Key` as keyof ApiKeys] as string || ''}
-                        onChange={(e) => handleInputChange(`${selectedImageProvider.id}Key` as keyof ApiKeys, e.target.value)}
-                        placeholder={`Enter your ${selectedImageProvider.name} API key`}
-                        className="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all shadow-sm"
-                        data-testid={`${selectedImageProvider.id}-key-input`}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => toggleKeyVisibility(`${selectedImageProvider.id}Key`)}
-                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                      >
-                        {showApiKeys[`${selectedImageProvider.id}Key`] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
-                    </div>
-
-                    <div className="bg-gradient-to-r from-green-50 to-blue-50 px-4 py-3 rounded-lg border border-green-100">
-                      <p className="text-sm text-gray-700">
-                        🌟 <strong>Mood-based images</strong> perfectly matched to your selected mood
-                      </p>
-                    </div>
-                  </motion.div>
-                )}
-                  </>
-                )}
-
-                {/* AI Provider Selection */}
-                <div className="space-y-3 sm:space-y-4 bg-gray-50 p-3 sm:p-5 rounded-xl border border-gray-200">
-                  <div className="flex items-center gap-2">
-                    <div className="w-5 h-5 sm:w-6 sm:h-6 bg-purple-500 rounded-md flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">{selectedProvider.icon}</span>
-                    </div>
-                    <label className="text-sm font-semibold text-gray-800">
-                      AI Quote Provider
-                    </label>
-                  </div>
-
-                  {/* Provider Dropdown */}
-                  <div className="relative" ref={dropdownRef}>
-                    <button
-                      type="button"
-                      onClick={() => setShowProviderDropdown(!showProviderDropdown)}
-                      className="w-full flex items-center justify-between px-3 sm:px-4 py-3 sm:py-4 bg-white border border-gray-300 rounded-xl hover:border-purple-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all shadow-sm hover:shadow-md"
-                    >
-                      <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                        <div className="text-lg sm:text-2xl w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center bg-gray-100 rounded-lg flex-shrink-0">
-                          {selectedProvider.icon}
-                        </div>
-                        <div className="text-left min-w-0 flex-1">
-                          <div className="font-semibold text-gray-900 text-sm sm:text-base truncate">{selectedProvider.name}</div>
-                          <div className="text-xs sm:text-sm text-gray-600 truncate hidden sm:block">{selectedProvider.description}</div>
-                        </div>
-                      </div>
-                      <ChevronDown className={`w-4 h-4 sm:w-5 sm:h-5 text-gray-400 transition-transform duration-200 flex-shrink-0 ${showProviderDropdown ? 'rotate-180' : ''}`} />
-                    </button>
-
-                    {/* Dropdown Menu */}
-                    <AnimatePresence>
-                      {showProviderDropdown && (
-                        <motion.div
-                          initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                          transition={{ duration: 0.2 }}
-                          className="absolute top-full left-0 right-0 z-20 mt-2 bg-white border border-gray-200 rounded-xl shadow-xl max-h-64 overflow-y-auto backdrop-blur-sm"
-                        >
-                          {providerList.map((provider, index) => (
-                            <motion.button
-                              key={provider.id}
-                              type="button"
-                              onClick={() => handleProviderSelect(provider.id)}
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: index * 0.05 }}
-                              className={`w-full flex items-center gap-4 px-4 py-4 text-left transition-all duration-200 ${
-                                formKeys.selectedAIProvider === provider.id
-                                  ? 'bg-gradient-to-r from-purple-50 to-blue-50 text-purple-600 border-l-4 border-purple-500'
-                                  : 'text-gray-900 hover:bg-gray-50'
-                              } ${index === 0 ? 'rounded-t-xl' : ''} ${index === providerList.length - 1 ? 'rounded-b-xl' : ''}`}
-                            >
-                              <div className="text-2xl w-10 h-10 flex items-center justify-center bg-gray-100 rounded-lg">
-                                {provider.icon}
-                              </div>
-                              <div className="flex-1">
-                                <div className="font-semibold">{provider.name}</div>
-                                <div className="text-sm text-gray-500">{provider.description}</div>
-                              </div>
-                              {formKeys.selectedAIProvider === provider.id && (
-                                <div className="flex items-center gap-2">
-                                  <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
-                                  <span className="text-xs font-medium text-purple-600">Active</span>
-                                </div>
-                              )}
-                            </motion.button>
-                          ))}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                </div>
-
-                {/* Dynamic API Key Field */}
-                {selectedProvider.requiresApiKey && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="space-y-4 bg-white p-5 rounded-xl border border-gray-200 shadow-sm"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="text-lg">{selectedProvider.icon}</div>
-                        <label className="text-sm font-semibold text-gray-800">
-                          {selectedProvider.name} API Key
-                        </label>
-                      </div>
-                      {selectedProvider.getKeyUrl && (
-                        <a
-                          href={selectedProvider.getKeyUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-purple-500 hover:text-purple-600 text-sm flex items-center gap-1 font-medium transition-colors bg-purple-50 px-3 py-1 rounded-lg hover:bg-purple-100"
-                        >
-                          Get Key <ExternalLink className="w-3 h-3" />
-                        </a>
-                      )}
-                    </div>
-
-                    {/* API Key Input */}
-                    <div className="relative">
-                      <Key className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <input
-                        type={showApiKeys[`${selectedProvider.id}Key`] ? 'text' : 'password'}
-                        value={formKeys[`${selectedProvider.id}Key` as keyof ApiKeys] as string || ''}
-                        onChange={(e) => handleInputChange(`${selectedProvider.id}Key` as keyof ApiKeys, e.target.value)}
-                        placeholder={`Enter your ${selectedProvider.name} API key`}
-                        className="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all shadow-sm"
-                        data-testid={`${selectedProvider.id}-key-input`}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => toggleKeyVisibility(`${selectedProvider.id}Key`)}
-                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                      >
-                        {showApiKeys[`${selectedProvider.id}Key`] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
-                    </div>
-
-                    {/* Azure Endpoint Field (only for Azure) */}
-                    {selectedProvider.id === 'azure' && (
-                      <div className="relative">
-                        <Key className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                        <input
-                          type="text"
-                          value={formKeys.azureEndpoint || ''}
-                          onChange={(e) => handleInputChange('azureEndpoint', e.target.value)}
-                          placeholder="Enter your Azure OpenAI endpoint"
-                          className="w-full pl-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all shadow-sm"
-                          data-testid="azure-endpoint-input"
-                        />
-                      </div>
-                    )}
-
-                    <div className="bg-gradient-to-r from-purple-50 to-blue-50 px-4 py-3 rounded-lg border border-purple-100">
-                      <p className="text-sm text-gray-700">
-                        🎯 <strong>AI-generated personalized quotes</strong> tailored to your selected mood
-                      </p>
-                    </div>
-                  </motion.div>
-                )}
-              </div>
-
-              {/* Validation Warning */}
-              {!canSave && (
-                <div className="px-6 py-3 bg-amber-50 border-t border-amber-200">
-                  <div className="flex items-center gap-2 text-amber-700">
-                    <span className="text-sm">⚠️</span>
-                    <span className="text-sm font-medium">
-                      Please add API keys for selected paid providers before saving.
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              {/* Footer */}
-              <div className="flex-shrink-0 flex flex-col sm:flex-row gap-3 sm:gap-4 p-3 sm:p-6 bg-gray-50 border-t border-gray-200 rounded-b-2xl">
-                <button
-                  onClick={onClose}
-                  className="flex-1 px-4 sm:px-6 py-3 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-medium shadow-sm min-h-[48px]"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSave}
-                  disabled={!canSave}
-                  className={`flex-1 px-4 sm:px-6 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 font-medium shadow-lg min-h-[48px] ${
-                    canSave
-                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 hover:shadow-xl transform hover:scale-105'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  }`}
-                  data-testid="save-keys"
-                >
-                  <Save className="w-4 h-4" />
-                  <span className="text-sm">
-                    {canSave ? 'Save Settings' : 'API Keys Required'}
-                  </span>
-                </button>
+              <div>
+                <IonText>
+                  <p className="text-sm mb-2">
+                    <strong>Optional:</strong> Add API keys for enhanced functionality.
+                    The app works with fallback content without keys.
+                  </p>
+                  <p className="text-xs text-gray-600">🔒 Keys stored locally, never sent to servers.</p>
+                </IonText>
               </div>
             </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+          </IonCardContent>
+        </IonCard>
+
+        <IonList>
+          {/* Image Provider Selection - Only show when Free AI is selected */}
+          {formKeys.selectedAIProvider === 'free' && (
+            <>
+              <IonItem>
+                <IonLabel>
+                  <h2>Image Provider</h2>
+                  <p>Choose your image source</p>
+                </IonLabel>
+                <IonSelect
+                  value={formKeys.selectedImageProvider}
+                  onSelectionChange={(e) => handleImageProviderSelect(e.detail.value)}
+                  interface="popover"
+                >
+                  {imageProviderList.map((provider) => (
+                    <IonSelectOption key={provider.id} value={provider.id}>
+                      {provider.icon} {provider.name}
+                      {provider.isFree && ' (FREE)'}
+                    </IonSelectOption>
+                  ))}
+                </IonSelect>
+              </IonItem>
+
+              {/* Dynamic Image API Key Field */}
+              {selectedImageProvider.requiresApiKey && (
+                <IonCard className="mx-4 my-4">
+                  <IonCardContent>
+                    <div className="flex items-center justify-between mb-4">
+                      <IonText>
+                        <h3 className="font-semibold">{selectedImageProvider.name} API Key</h3>
+                      </IonText>
+                      {selectedImageProvider.getKeyUrl && (
+                        <IonButton
+                          fill="outline"
+                          size="small"
+                          href={selectedImageProvider.getKeyUrl}
+                          target="_blank"
+                        >
+                          <IonIcon icon={openOutline} slot="end" />
+                          Get Key
+                        </IonButton>
+                      )}
+                    </div>
+
+                    <IonItem>
+                      <IonIcon icon={key} slot="start" />
+                      <IonInput
+                        type={showApiKeys[`${selectedImageProvider.id}Key`] ? 'text' : 'password'}
+                        value={formKeys[`${selectedImageProvider.id}Key` as keyof ApiKeys] as string || ''}
+                        onIonInput={(e) => handleInputChange(`${selectedImageProvider.id}Key` as keyof ApiKeys, e.detail.value!)}
+                        placeholder={`Enter ${selectedImageProvider.name} API key`}
+                        data-testid={`${selectedImageProvider.id}-key-input`}
+                      />
+                      <IonButton
+                        fill="clear"
+                        slot="end"
+                        onClick={() => toggleKeyVisibility(`${selectedImageProvider.id}Key`)}
+                      >
+                        <IonIcon icon={showApiKeys[`${selectedImageProvider.id}Key`] ? eyeOff : eye} />
+                      </IonButton>
+                    </IonItem>
+
+                    <IonNote className="block mt-2 text-sm">
+                      🌟 Mood-based images perfectly matched to your selection
+                    </IonNote>
+                  </IonCardContent>
+                </IonCard>
+              )}
+            </>
+          )}
+
+          {/* AI Provider Selection */}
+          <IonItem>
+            <IonLabel>
+              <h2>AI Quote Provider</h2>
+              <p>Choose your AI service</p>
+            </IonLabel>
+            <IonSelect
+              value={formKeys.selectedAIProvider}
+              onSelectionChange={(e) => handleProviderSelect(e.detail.value)}
+              interface="popover"
+            >
+              {providerList.map((provider) => (
+                <IonSelectOption key={provider.id} value={provider.id}>
+                  {provider.icon} {provider.name}
+                </IonSelectOption>
+              ))}
+            </IonSelect>
+          </IonItem>
+
+          {/* Dynamic AI API Key Field */}
+          {selectedProvider.requiresApiKey && (
+            <IonCard className="mx-4 my-4">
+              <IonCardContent>
+                <div className="flex items-center justify-between mb-4">
+                  <IonText>
+                    <h3 className="font-semibold">{selectedProvider.name} API Key</h3>
+                  </IonText>
+                  {selectedProvider.getKeyUrl && (
+                    <IonButton
+                      fill="outline"
+                      size="small"
+                      href={selectedProvider.getKeyUrl}
+                      target="_blank"
+                    >
+                      <IonIcon icon={openOutline} slot="end" />
+                      Get Key
+                    </IonButton>
+                  )}
+                </div>
+
+                <IonItem>
+                  <IonIcon icon={key} slot="start" />
+                  <IonInput
+                    type={showApiKeys[`${selectedProvider.id}Key`] ? 'text' : 'password'}
+                    value={formKeys[`${selectedProvider.id}Key` as keyof ApiKeys] as string || ''}
+                    onIonInput={(e) => handleInputChange(`${selectedProvider.id}Key` as keyof ApiKeys, e.detail.value!)}
+                    placeholder={`Enter ${selectedProvider.name} API key`}
+                    data-testid={`${selectedProvider.id}-key-input`}
+                  />
+                  <IonButton
+                    fill="clear"
+                    slot="end"
+                    onClick={() => toggleKeyVisibility(`${selectedProvider.id}Key`)}
+                  >
+                    <IonIcon icon={showApiKeys[`${selectedProvider.id}Key`] ? eyeOff : eye} />
+                  </IonButton>
+                </IonItem>
+
+                {/* Azure Endpoint Field */}
+                {selectedProvider.id === 'azure' && (
+                  <IonItem>
+                    <IonIcon icon={key} slot="start" />
+                    <IonInput
+                      type="text"
+                      value={formKeys.azureEndpoint || ''}
+                      onIonInput={(e) => handleInputChange('azureEndpoint', e.detail.value!)}
+                      placeholder="Enter Azure OpenAI endpoint"
+                      data-testid="azure-endpoint-input"
+                    />
+                  </IonItem>
+                )}
+
+                <IonNote className="block mt-2 text-sm">
+                  🎯 AI-generated personalized quotes tailored to your mood
+                </IonNote>
+              </IonCardContent>
+            </IonCard>
+          )}
+        </IonList>
+
+        {/* Validation Warning */}
+        {!canSave && (
+          <IonCard className="mx-4 my-4" color="warning">
+            <IonCardContent>
+              <div className="flex items-center gap-2">
+                <span>⚠️</span>
+                <IonText>
+                  <p className="text-sm font-medium">
+                    Please add API keys for selected paid providers before saving.
+                  </p>
+                </IonText>
+              </div>
+            </IonCardContent>
+          </IonCard>
+        )}
+
+        {/* Action Buttons */}
+        <div className="p-4 space-y-3">
+          <IonButton
+            expand="block"
+            color={canSave ? 'primary' : 'medium'}
+            disabled={!canSave}
+            onClick={handleSave}
+            data-testid="save-keys"
+          >
+            <IonIcon icon={save} slot="start" />
+            {canSave ? 'Save Settings' : 'API Keys Required'}
+          </IonButton>
+          
+          <IonButton
+            expand="block"
+            fill="outline"
+            color="medium"
+            onClick={handleClose}
+          >
+            Cancel
+          </IonButton>
+        </div>
+      </IonContent>
+    </IonModal>
   );
 };

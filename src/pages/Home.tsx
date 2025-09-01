@@ -1,6 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Settings, Clock, Type, Palette } from 'lucide-react';
+import {
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonCard,
+  IonCardContent,
+  IonButton,
+  IonIcon,
+  IonFab,
+  IonFabButton,
+  IonFabList,
+  IonToast,
+  IonLoading,
+  IonText,
+  IonChip,
+  IonBadge,
+  IonRippleEffect
+} from '@ionic/react';
+import { 
+  settings, 
+  time, 
+  create, 
+  colorPalette, 
+  download, 
+  happy as happyIcon,
+  sad as sadIcon,
+  flash as motivatedIcon,
+  leaf as peacefulIcon,
+  fitness as energeticIcon,
+  heart as romanticIcon,
+  moon as mysteriousIcon,
+  trail as adventureIcon,
+  brush as creativeIcon
+} from 'ionicons/icons';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { MoodCard } from '../components/MoodCard';
 import { ImageDisplay } from '../components/ImageDisplay';
 import { DownloadButton } from '../components/DownloadButton';
@@ -21,6 +59,15 @@ import { DEFAULT_THEME } from '../config/themes';
 import { logClipboardCapabilities } from '../utils/clipboardTest';
 import { WallpaperData, Mood, SavedWallpaper } from '../types';
 
+// Haptic feedback helper
+const triggerHaptic = async () => {
+  try {
+    await Haptics.impact({ style: ImpactStyle.Light });
+  } catch (error) {
+    // Haptics not available on web
+  }
+};
+
 export const Home: React.FC = () => {
   const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
   const [wallpaperData, setWallpaperData] = useState<WallpaperData | null>(null);
@@ -31,6 +78,8 @@ export const Home: React.FC = () => {
   const [showThemeSelector, setShowThemeSelector] = useState(false);
   const [customQuote, setCustomQuote] = useState<{text: string; author?: string} | null>(null);
   const [selectedTheme, setSelectedTheme] = useState(DEFAULT_THEME);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   const { apiKeys, saveApiKeys, hasCurrentImageKey, hasCurrentAIKey, getCurrentAIKey, getCurrentImageKey, selectedAIProvider, selectedImageProvider } = useApiKeys();
   const { fetchImageByMood, loading: imageLoading, error: imageError } = useImageAPI(selectedImageProvider, getCurrentImageKey());
@@ -47,6 +96,19 @@ export const Home: React.FC = () => {
     toggleFavorite,
     totalCount
   } = useWallpaperHistory();
+
+  // Mood icon mapping for Ionic icons
+  const moodIcons = {
+    happy: happyIcon,
+    sad: sadIcon,
+    motivated: motivatedIcon,
+    peaceful: peacefulIcon,
+    energetic: energeticIcon,
+    romantic: romanticIcon,
+    mysterious: mysteriousIcon,
+    adventure: adventureIcon,
+    creative: creativeIcon
+  };
 
   // Handle shared wallpaper from URL parameters
   useEffect(() => {
@@ -76,6 +138,7 @@ export const Home: React.FC = () => {
   }, []);
 
   const handleMoodSelect = async (moodId: string) => {
+    await triggerHaptic();
     const mood = moodId as Mood;
     setSelectedMood(mood);
     setWallpaperData(null);
@@ -99,6 +162,10 @@ export const Home: React.FC = () => {
 
         // Auto-save to history - save even if there were API errors since we have fallback content
         saveWallpaper(newWallpaperData);
+        
+        // Show success toast
+        setToastMessage('Wallpaper generated successfully!');
+        setShowToast(true);
       } else {
         console.error('Failed to generate both image and quote');
         // This should not happen as our hooks always return fallback content
@@ -112,12 +179,14 @@ export const Home: React.FC = () => {
   };
 
   const handleRetry = () => {
+    triggerHaptic();
     if (selectedMood) {
       handleMoodSelect(selectedMood);
     }
   };
 
   const handleRestoreWallpaper = (savedWallpaper: SavedWallpaper) => {
+    triggerHaptic();
     setWallpaperData({
       image: savedWallpaper.image,
       quote: savedWallpaper.quote,
@@ -128,6 +197,7 @@ export const Home: React.FC = () => {
   };
 
   const handleCustomQuoteSave = (text: string, author?: string) => {
+    triggerHaptic();
     setCustomQuote({ text, author });
     if (selectedMood) {
       handleMoodSelect(selectedMood);
@@ -135,6 +205,7 @@ export const Home: React.FC = () => {
   };
 
   const handleCustomQuoteGenerate = (moodId: string) => {
+    await triggerHaptic();
     setShowCustomQuote(true);
     setSelectedMood(moodId as Mood);
   };
@@ -143,251 +214,155 @@ export const Home: React.FC = () => {
   const error = imageError || quoteError;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-500 to-red-500">
-      <div className="container mx-auto px-4 py-8">
-        {/* Action Buttons */}
-        <motion.div
-          className="fixed top-4 right-4 z-30 flex flex-col sm:flex-row gap-2 sm:gap-3"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.5 }}
-        >
-          {/* Theme Button */}
-          <button
-            onClick={() => setShowThemeSelector(true)}
-            className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-2 sm:p-3 rounded-full hover:bg-opacity-30 transition-all duration-200 shadow-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
-            data-testid="theme-button"
-            title="Choose Theme"
-          >
-            <Palette className="w-4 h-4 sm:w-5 sm:h-5" />
-          </button>
+    <IonPage>
+      <IonHeader translucent>
+        <IonToolbar className="gradient-background">
+          <IonTitle className="text-white font-bold">
+            Mood Wallpaper
+          </IonTitle>
+        </IonToolbar>
+      </IonHeader>
 
-          {/* Custom Quote Button */}
-          <button
-            onClick={() => setShowCustomQuote(true)}
-            className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-2 sm:p-3 rounded-full hover:bg-opacity-30 transition-all duration-200 shadow-lg min-h-[44px] min-w-[44px] flex items-center justify-center relative"
-            data-testid="custom-quote-button"
-            title="Add Custom Quote"
-          >
-            <Type className="w-4 h-4 sm:w-5 sm:h-5" />
-            {customQuote && (
-              <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center">
-                ✓
-              </span>
+      <IonContent fullscreen className="gradient-background">
+        {/* Header Content */}
+        <div className="text-center pt-6 pb-4 px-4">
+          <IonText>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">
+              Mood Wallpaper Generator
+            </h1>
+            <p className="text-base sm:text-lg text-white opacity-90">
+              Select your mood and get a personalized wallpaper
+            </p>
+          </IonText>
+
+          {/* Provider Status Chips */}
+          <div className="flex flex-wrap justify-center gap-2 mt-4">
+            <IonChip className="bg-white bg-opacity-20 backdrop-blur-sm">
+              <span className="text-lg mr-1">{AI_PROVIDERS[selectedAIProvider]?.icon || '🤖'}</span>
+              <IonText className="text-white text-sm font-medium">
+                {AI_PROVIDERS[selectedAIProvider]?.name || 'AI'}
+              </IonText>
+            </IonChip>
+
+            {(selectedAIProvider === 'free' && selectedImageProvider !== 'picsum') && (
+              <IonChip className="bg-white bg-opacity-20 backdrop-blur-sm">
+                <span className="text-lg mr-1">{IMAGE_PROVIDERS[selectedImageProvider]?.icon || '🖼️'}</span>
+                <IonText className="text-white text-sm font-medium">
+                  {IMAGE_PROVIDERS[selectedImageProvider]?.name || 'Images'}
+                </IonText>
+              </IonChip>
             )}
-          </button>
-
-          {/* History Button */}
-          <button
-            onClick={() => setShowHistory(true)}
-            className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-2 sm:p-3 rounded-full hover:bg-opacity-30 transition-all duration-200 shadow-lg relative min-h-[44px] min-w-[44px] flex items-center justify-center"
-            data-testid="history-button"
-          >
-            <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
-            {totalCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center">
-                {totalCount > 9 ? '9+' : totalCount}
-              </span>
-            )}
-          </button>
-
-          {/* Settings Button */}
-          <button
-            onClick={() => setShowSettings(true)}
-            className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-2 sm:p-3 rounded-full hover:bg-opacity-30 transition-all duration-200 shadow-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
-            data-testid="settings-button"
-          >
-            <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
-          </button>
-        </motion.div>
-
-        {/* Header */}
-        <motion.div
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold text-white mb-4 px-4">
-            Mood Wallpaper Generator
-          </h1>
-          <p className="text-lg sm:text-xl text-white opacity-90 px-4">
-            Select your mood and get a personalized wallpaper with an inspiring quote
-          </p>
-
-          {/* AI Provider Badge */}
-          <motion.div
-            className="mt-4 flex items-center justify-center gap-3"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-          >
-            <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-full px-3 sm:px-4 py-2 flex items-center gap-2 mx-2">
-              <span className="text-base sm:text-lg">{AI_PROVIDERS[selectedAIProvider]?.icon || '🤖'}</span>
-              {(selectedAIProvider === 'free' && selectedImageProvider !== 'picsum') && (
-                <span className="text-base sm:text-lg">{IMAGE_PROVIDERS[selectedImageProvider]?.icon || '🖼️'}</span>
-              )}
-              <span className="text-white text-xs sm:text-sm font-medium">
-                Powered by {AI_PROVIDERS[selectedAIProvider]?.name || 'AI'}
-                {(selectedAIProvider === 'free' && selectedImageProvider !== 'picsum') && (
-                  <span className="hidden sm:inline"> + {IMAGE_PROVIDERS[selectedImageProvider]?.name || 'Images'}</span>
-                )}
-              </span>
-            </div>
 
             {customQuote && (
-              <div className="bg-green-500 bg-opacity-90 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-2">
-                <Type className="w-4 h-4 text-white" />
-                <span className="text-white text-xs font-medium">Custom Quote Active</span>
-                <button
+              <IonChip color="success">
+                <IonIcon icon={create} />
+                <IonText>Custom Quote</IonText>
+                <IonButton
+                  fill="clear"
+                  size="small"
                   onClick={() => setCustomQuote(null)}
-                  className="text-white hover:text-gray-200 text-xs ml-1"
                 >
                   ×
-                </button>
-              </div>
+                </IonButton>
+              </IonChip>
             )}
-          </motion.div>
+          </div>
 
+          {/* Status Messages */}
           {((selectedImageProvider !== 'picsum' && !hasCurrentImageKey) || (selectedAIProvider !== 'free' && !hasCurrentAIKey)) && (
-            <motion.div
-              className="mt-4 text-sm text-white opacity-80"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }}
-            >
+            <IonText className="block mt-3 text-sm text-white opacity-80">
               <p>
                 {selectedAIProvider === 'free' && selectedImageProvider === 'picsum'
-                  ? 'Using Free providers. Upgrade to premium providers for enhanced quality and variety.'
-                  : 'Add valid API keys in settings for enhanced functionality. Invalid keys will automatically fallback to free content.'}
+                  ? 'Using free providers. Add API keys for enhanced quality.'
+                  : 'Add API keys in settings for enhanced functionality.'}
               </p>
-            </motion.div>
+            </IonText>
+          )}
+        </div>
+
+        {/* Mood Selection Grid */}
+        <IonGrid className="px-2">
+          <IonRow>
+            {Object.values(MOODS).map((mood) => (
+              <IonCol key={mood.id} size="6" sizeMd="4" sizeLg="2.4">
+                <IonCard
+                  className={`mood-card cursor-pointer transition-all duration-300 ${
+                    selectedMood === mood.id ? 'selected-mood' : ''
+                  }`}
+                  style={{
+                    background: `linear-gradient(135deg, ${mood.gradient.replace('from-', '').replace('to-', '').split(' ').map(c => {
+                      const colorMap: Record<string, string> = {
+                        'yellow-300': '#FDE047',
+                        'orange-400': '#FB923C',
+                        'blue-300': '#93C5FD',
+                        'indigo-400': '#818CF8',
+                        'red-300': '#FCA5A5',
+                        'pink-400': '#F472B6',
+                        'green-300': '#86EFAC',
+                        'teal-400': '#2DD4BF',
+                        'orange-300': '#FDBA74',
+                        'emerald-300': '#6EE7B7',
+                        'cyan-400': '#22D3EE',
+                        'violet-300': '#C4B5FD',
+                        'purple-300': '#D8B4FE',
+                        'purple-400': '#C084FC'
+                      };
+                      return colorMap[c] || c;
+                    }).join(', ')})`,
+                    minHeight: '100px'
+                  }}
+                  button
+                  onClick={() => handleMoodSelect(mood.id)}
+                  data-testid={`mood-card-${mood.id}`}
+                >
+                  <IonRippleEffect />
+                  <IonCardContent className="text-center text-white p-3">
+                    <div className="text-2xl mb-2">{mood.icon}</div>
+                    <IonText>
+                      <h3 className="font-bold text-base mb-1">{mood.label}</h3>
+                      <p className="text-xs opacity-90 leading-tight">{mood.description}</p>
+                    </IonText>
+                  </IonCardContent>
+                </IonCard>
+              </IonCol>
+            ))}
+          </IonRow>
+        </IonGrid>
+
+        {/* Content Area */}
+        <div className="px-4 pb-20">
+          {isLoading && (
+            <div className="text-center py-8">
+              <IonText className="text-white">
+                <p className="mb-4">Creating your personalized wallpaper...</p>
+              </IonText>
+              <div className="flex justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+              </div>
+            </div>
           )}
 
           {(imageError || quoteError) && !isLoading && (
-            <motion.div
-              className="mt-4 text-sm text-white opacity-80"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }}
-            >
-              <p>
-                💡 Tip: Switch to free providers in settings for reliable service without API keys.
-              </p>
-            </motion.div>
-          )}
-        </motion.div>
-
-        {/* Mood Selection */}
-        <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-6 sm:mb-12 max-w-7xl mx-auto"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          {Object.values(MOODS).map((mood, index) => (
-            <div key={mood.id} className="flex flex-col">
-              <MoodCard
-                mood={mood}
-                onSelect={handleMoodSelect}
-                isSelected={selectedMood === mood.id}
-              />
-
-              {/* Mobile: Show content below selected card */}
-              {selectedMood === mood.id && (
-                <div className="sm:hidden mt-4">
-                  {isLoading && (
-                    <LoadingSpinner message="Creating your personalized wallpaper..." />
-                  )}
-
-                  {(imageError || quoteError) && (
-                    <motion.div
-                      className="bg-orange-100 border border-orange-400 text-orange-700 px-3 py-2 rounded-xl mb-3"
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="text-base">⚠️</span>
-                        <div>
-                          <p className="font-medium text-sm">Using fallback content</p>
-                          <p className="text-xs">
-                            {imageError && quoteError ?
-                              "Services unavailable. Using built-in content." :
-                              imageError ?
-                                "Image service unavailable" :
-                                "Quote service unavailable"
-                            }
-                          </p>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {wallpaperData && !isLoading && !error && (
-                    <motion.div
-                      className="space-y-4"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5 }}
-                    >
-                      <ImageDisplay
-                        image={wallpaperData.image}
-                        quote={wallpaperData.quote}
-                        themeId={selectedTheme}
-                      />
-
-                      <div className="flex justify-center">
-                        <DownloadButton
-                          mood={wallpaperData.mood}
-                          disabled={isLoading}
-                        />
-                      </div>
-                    </motion.div>
-                  )}
+            <IonCard className="bg-orange-100 border border-orange-400 mx-auto max-w-2xl">
+              <IonCardContent>
+                <div className="flex items-center gap-2 text-orange-700">
+                  <span className="text-lg">⚠️</span>
+                  <div>
+                    <p className="font-medium">Using fallback content</p>
+                    <p className="text-sm">
+                      {imageError && quoteError ?
+                        "External services temporarily unavailable." :
+                        imageError ? imageError : quoteError
+                      }
+                    </p>
+                  </div>
                 </div>
-              )}
-            </div>
-          ))}
-        </motion.div>
-
-        {/* Desktop Content Area */}
-        <div className="hidden sm:block max-w-4xl mx-auto">
-          {isLoading && (
-            <LoadingSpinner message="Creating your personalized wallpaper..." />
+              </IonCardContent>
+            </IonCard>
           )}
 
-          {(imageError || quoteError) && (
-            <motion.div
-              className="bg-orange-100 border border-orange-400 text-orange-700 px-4 py-3 rounded-xl mb-4 max-w-2xl mx-auto"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="flex items-center gap-2">
-                <span className="text-lg">⚠️</span>
-                <div>
-                  <p className="font-medium">Using fallback content</p>
-                  <p className="text-sm">
-                    {imageError && quoteError ?
-                      "External services temporarily unavailable. Using built-in content." :
-                      imageError ?
-                        imageError :
-                        quoteError
-                    }
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {wallpaperData && !isLoading && !error && (
-            <motion.div
-              className="space-y-6"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            >
+          {wallpaperData && !isLoading && (
+            <div className="max-w-4xl mx-auto space-y-4">
               <ImageDisplay
                 image={wallpaperData.image}
                 quote={wallpaperData.quote}
@@ -400,33 +375,77 @@ export const Home: React.FC = () => {
                   disabled={isLoading}
                 />
               </div>
-            </motion.div>
+            </div>
           )}
 
           {!selectedMood && !isLoading && (
-            <motion.div
-              className="text-center text-white"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-            >
-              <p className="text-lg">Choose a mood above to get started</p>
-            </motion.div>
+            <div className="text-center text-white py-8">
+              <IonText>
+                <p className="text-lg">Choose a mood above to get started</p>
+              </IonText>
+            </div>
           )}
         </div>
 
-        {/* Mobile: Show message when no mood selected */}
-        {!selectedMood && !isLoading && (
-          <motion.div
-            className="sm:hidden text-center text-white mt-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-          >
-            <p className="text-base">Choose a mood above to get started</p>
-          </motion.div>
-        )}
-      </div>
+        {/* Floating Action Button */}
+        <IonFab vertical="bottom" horizontal="end" slot="fixed">
+          <IonFabButton color="light">
+            <IonIcon icon={settings} />
+          </IonFabButton>
+          <IonFabList side="top">
+            <IonFabButton
+              color="tertiary"
+              onClick={() => {
+                triggerHaptic();
+                setShowThemeSelector(true);
+              }}
+              data-testid="theme-button"
+            >
+              <IonIcon icon={colorPalette} />
+            </IonFabButton>
+            <IonFabButton
+              color="secondary"
+              onClick={() => {
+                triggerHaptic();
+                setShowCustomQuote(true);
+              }}
+              data-testid="custom-quote-button"
+            >
+              <IonIcon icon={create} />
+              {customQuote && (
+                <IonBadge color="success" className="absolute -top-1 -right-1">
+                  ✓
+                </IonBadge>
+              )}
+            </IonFabButton>
+            <IonFabButton
+              color="primary"
+              onClick={() => {
+                triggerHaptic();
+                setShowHistory(true);
+              }}
+              data-testid="history-button"
+            >
+              <IonIcon icon={time} />
+              {totalCount > 0 && (
+                <IonBadge color="danger" className="absolute -top-1 -right-1">
+                  {totalCount > 9 ? '9+' : totalCount}
+                </IonBadge>
+              )}
+            </IonFabButton>
+            <IonFabButton
+              color="medium"
+              onClick={() => {
+                triggerHaptic();
+                setShowSettings(true);
+              }}
+              data-testid="settings-button"
+            >
+              <IonIcon icon={settings} />
+            </IonFabButton>
+          </IonFabList>
+        </IonFab>
+      </IonContent>
 
       {/* API Key Settings Modal */}
       <ApiKeySettings
@@ -461,6 +480,23 @@ export const Home: React.FC = () => {
         selectedTheme={selectedTheme}
         onSelectTheme={setSelectedTheme}
       />
-    </div>
+
+      {/* Loading overlay */}
+      <IonLoading
+        isOpen={isLoading}
+        message="Creating your wallpaper..."
+        spinner="crescent"
+      />
+
+      {/* Toast notifications */}
+      <IonToast
+        isOpen={showToast}
+        onDidDismiss={() => setShowToast(false)}
+        message={toastMessage}
+        duration={2000}
+        position="bottom"
+        color="success"
+      />
+    </IonPage>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Download } from 'lucide-react';
+import { IonButton, IonIcon, IonSpinner } from '@ionic/react';
+import { download } from 'ionicons/icons';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { downloadWallpaper } from '../utils/downloadImage';
 
 interface DownloadButtonProps {
@@ -11,9 +12,18 @@ interface DownloadButtonProps {
 export const DownloadButton: React.FC<DownloadButtonProps> = ({ disabled = false, mood = '' }) => {
   const [isDownloading, setIsDownloading] = useState(false);
 
+  const triggerHaptic = async () => {
+    try {
+      await Haptics.impact({ style: ImpactStyle.Medium });
+    } catch (error) {
+      // Haptics not available on web
+    }
+  };
+
   const handleDownload = async () => {
     if (disabled || isDownloading) return;
 
+    await triggerHaptic();
     setIsDownloading(true);
     try {
       const filename = `${mood}-wallpaper-${Date.now()}.png`;
@@ -27,25 +37,21 @@ export const DownloadButton: React.FC<DownloadButtonProps> = ({ disabled = false
   };
 
   return (
-    <motion.button
-      className={`
-        inline-flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium transition-all min-h-[44px]
-        ${disabled
-          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          : 'bg-blue-500 text-white hover:bg-blue-600 active:scale-95'
-        }
-        ${isDownloading ? 'animate-pulse' : ''}
-      `}
+    <IonButton
+      expand="block"
+      size="large"
+      color={disabled ? 'medium' : 'primary'}
       onClick={handleDownload}
       disabled={disabled || isDownloading}
-      whileHover={disabled ? {} : { scale: 1.05 }}
-      whileTap={disabled ? {} : { scale: 0.95 }}
+      className="download-button"
       data-testid="download-button"
     >
-      <Download size={18} className={`${isDownloading ? 'animate-spin' : ''} sm:w-5 sm:h-5`} />
-      <span className="text-sm sm:text-base">
-        {isDownloading ? 'Downloading...' : 'Download Wallpaper'}
-      </span>
-    </motion.button>
+      {isDownloading ? (
+        <IonSpinner name="crescent" />
+      ) : (
+        <IonIcon icon={download} slot="start" />
+      )}
+      {isDownloading ? 'Downloading...' : 'Download Wallpaper'}
+    </IonButton>
   );
 };

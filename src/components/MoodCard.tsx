@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { IonCard, IonCardContent, IonText, IonRippleEffect } from '@ionic/react';
 import { MoodConfig } from '../types';
 
 interface MoodCardProps {
@@ -10,35 +10,47 @@ interface MoodCardProps {
 
 export const MoodCard: React.FC<MoodCardProps> = ({ mood, onSelect, isSelected = false }) => {
   return (
-    <motion.div
+    <IonCard
       className={`
-        relative overflow-hidden rounded-xl cursor-pointer transition-all duration-300 
+        relative overflow-hidden cursor-pointer transition-all duration-300 
         ${isSelected ? 'ring-4 ring-white ring-opacity-50 scale-105' : ''}
-        bg-gradient-to-br ${mood.gradient}
       `}
-      whileHover={{ scale: 1.05, y: -5 }}
-      whileTap={{ scale: 0.95 }}
+      style={{
+        background: `linear-gradient(135deg, ${mood.gradient.replace('from-', '').replace('to-', '').split(' ').map(c => {
+          const colorMap: Record<string, string> = {
+            'yellow-300': '#FDE047',
+            'orange-400': '#FB923C',
+            'blue-300': '#93C5FD',
+            'indigo-400': '#818CF8',
+            'red-300': '#FCA5A5',
+            'pink-400': '#F472B6',
+            'green-300': '#86EFAC',
+            'teal-400': '#2DD4BF',
+            'orange-300': '#FDBA74',
+            'emerald-300': '#6EE7B7',
+            'cyan-400': '#22D3EE',
+            'violet-300': '#C4B5FD',
+            'purple-300': '#D8B4FE',
+            'purple-400': '#C084FC'
+          };
+          return colorMap[c] || c;
+        }).join(', ')})`,
+        minHeight: '100px'
+      }}
+      button
       onClick={() => onSelect(mood.id)}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
       data-testid={`mood-card-${mood.id}`}
     >
-      <div className="p-3 sm:p-4 h-24 sm:h-28 flex flex-col justify-between text-white">
-        <div className="text-xl sm:text-2xl mb-1">{mood.icon}</div>
+      <IonRippleEffect />
+      <IonCardContent className="text-center text-white p-3 h-full flex flex-col justify-between">
+        <div className="text-2xl mb-2">{mood.icon}</div>
         <div>
-          <h3 className="text-base sm:text-lg font-bold mb-1">{mood.label}</h3>
-          <p className="text-xs opacity-90 leading-tight">{mood.description}</p>
+          <IonText>
+            <h3 className="font-bold text-base mb-1">{mood.label}</h3>
+            <p className="text-xs opacity-90 leading-tight">{mood.description}</p>
+          </IonText>
         </div>
-      </div>
-      
-      {/* Overlay effect */}
-      <motion.div
-        className="absolute inset-0 bg-white bg-opacity-20"
-        initial={{ opacity: 0 }}
-        whileHover={{ opacity: 1 }}
-        transition={{ duration: 0.2 }}
-      />
-    </motion.div>
+      </IonCardContent>
+    </IonCard>
   );
 };
