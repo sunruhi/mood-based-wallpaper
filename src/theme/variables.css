@@ -115,3 +115,25 @@ http://ionicframework.com/docs/theming/ */
     --min-height: 48px;
   }
 }
+
+.mood-gradient-happy { background: linear-gradient(135deg, #FDE047, #FB923C); }
+.mood-gradient-sad { background: linear-gradient(135deg, #93C5FD, #818CF8); }
+.mood-gradient-motivated { background: linear-gradient(135deg, #FCA5A5, #F472B6); }
+.mood-gradient-peaceful { background: linear-gradient(135deg, #86EFAC, #2DD4BF); }
+.mood-gradient-energetic { background: linear-gradient(135deg, #FDBA74, #6EE7B7); }
+.mood-gradient-romantic { background: linear-gradient(135deg, #F472B6, #C4B5FD); }
+.mood-gradient-mysterious { background: linear-gradient(135deg, #D8B4FE, #C084FC); }
+.mood-gradient-adventure { background: linear-gradient(135deg, #22D3EE, #818CF8); }
+.mood-gradient-creative { background: linear-gradient(135deg, #FB923C, #FDE047); }
+.mood-gradient-default { background: linear-gradient(135deg, #e0e7ff, #f3f4f6); }
+
+.mood-card {
+  color: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.mood-card:hover, .mood-card.selected-mood {
+  transform: scale(1.05);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+}

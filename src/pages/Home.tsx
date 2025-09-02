@@ -283,49 +283,32 @@ export const Home: React.FC = () => {
         {/* Mood Selection Grid */}
         <IonGrid className="px-2">
           <IonRow>
-            {Object.values(MOODS).map((mood) => (
-              <IonCol key={mood.id} size="6" sizeMd="4" sizeLg="2.4">
-                <IonCard
-                  className={`mood-card cursor-pointer transition-all duration-300 ${
-                    selectedMood === mood.id ? 'selected-mood' : ''
-                  }`}
-                  style={{
-                    background: `linear-gradient(135deg, ${mood.gradient.replace('from-', '').replace('to-', '').split(' ').map(c => {
-                      const colorMap: Record<string, string> = {
-                        'yellow-300': '#FDE047',
-                        'orange-400': '#FB923C',
-                        'blue-300': '#93C5FD',
-                        'indigo-400': '#818CF8',
-                        'red-300': '#FCA5A5',
-                        'pink-400': '#F472B6',
-                        'green-300': '#86EFAC',
-                        'teal-400': '#2DD4BF',
-                        'orange-300': '#FDBA74',
-                        'emerald-300': '#6EE7B7',
-                        'cyan-400': '#22D3EE',
-                        'violet-300': '#C4B5FD',
-                        'purple-300': '#D8B4FE',
-                        'purple-400': '#C084FC'
-                      };
-                      return colorMap[c] || c;
-                    }).join(', ')})`,
-                    minHeight: '100px'
-                  }}
-                  button
-                  onClick={() => handleMoodSelect(mood.id)}
-                  data-testid={`mood-card-${mood.id}`}
-                >
-                  <IonRippleEffect />
-                  <IonCardContent className="text-center text-white p-3">
-                    <div className="text-2xl mb-2">{mood.icon}</div>
-                    <IonText>
-                      <h3 className="font-bold text-base mb-1">{mood.label}</h3>
-                      <p className="text-xs opacity-90 leading-tight">{mood.description}</p>
-                    </IonText>
-                  </IonCardContent>
-                </IonCard>
-              </IonCol>
-            ))}
+            {Object.values(MOODS).map((mood) => {
+              // Gradient class name, fallback to default if missing
+              const gradientClass = mood.gradient
+                ? `mood-gradient-${mood.id}`
+                : 'mood-gradient-default';
+              return (
+                <IonCol key={mood.id} size="6" sizeMd="4" sizeLg="2.4">
+                  <IonCard
+                    className={`mood-card cursor-pointer transition-all duration-300 rounded-xl shadow-md ${selectedMood === mood.id ? 'selected-mood' : ''} ${gradientClass}`}
+                    button
+                    onClick={() => handleMoodSelect(mood.id)}
+                    data-testid={`mood-card-${mood.id}`}
+                    aria-label={`Select mood: ${mood.label}`}
+                  >
+                    <IonRippleEffect />
+                    <IonCardContent className="text-center text-white p-3">
+                      <div className="text-2xl mb-2">{mood.icon}</div>
+                      <IonText>
+                        <h3 className="font-bold text-base mb-1">{mood.label}</h3>
+                        <p className="text-xs opacity-90 leading-tight">{mood.description}</p>
+                      </IonText>
+                    </IonCardContent>
+                  </IonCard>
+                </IonCol>
+              );
+            })}
           </IonRow>
         </IonGrid>
 
