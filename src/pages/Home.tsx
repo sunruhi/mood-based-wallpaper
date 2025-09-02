@@ -204,7 +204,7 @@ export const Home: React.FC = () => {
     }
   };
 
-  const handleCustomQuoteGenerate = (moodId: string) => {
+  const handleCustomQuoteGenerate = async (moodId: string) => {
     await triggerHaptic();
     setShowCustomQuote(true);
     setSelectedMood(moodId as Mood);
