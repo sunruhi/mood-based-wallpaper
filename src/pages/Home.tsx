@@ -35,7 +35,7 @@ import {
   fitness as energeticIcon,
   heart as romanticIcon,
   moon as mysteriousIcon,
-  trail as adventureIcon,
+  walk as adventureIcon,
   brush as creativeIcon
 } from 'ionicons/icons';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
