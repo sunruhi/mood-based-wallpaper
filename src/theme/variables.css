@@ -1,31 +1,32 @@
 /* Ionic Variables and Theming. For more info, please see:
 http://ionicframework.com/docs/theming/ */
 
+/* Enhanced color palette */
 /** Ionic CSS Variables **/
 :root {
   /** primary **/
-  --ion-color-primary: #8B5CF6;
-  --ion-color-primary-rgb: 139, 92, 246;
+  --ion-color-primary: #667eea;
+  --ion-color-primary-rgb: 102, 126, 234;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #7C3AED;
-  --ion-color-primary-tint: #A78BFA;
+  --ion-color-primary-shade: #5a67d8;
+  --ion-color-primary-tint: #7c8aed;
 
   /** secondary **/
-  --ion-color-secondary: #EC4899;
-  --ion-color-secondary-rgb: 236, 72, 153;
+  --ion-color-secondary: #764ba2;
+  --ion-color-secondary-rgb: 118, 75, 162;
   --ion-color-secondary-contrast: #ffffff;
   --ion-color-secondary-contrast-rgb: 255, 255, 255;
-  --ion-color-secondary-shade: #DB2777;
-  --ion-color-secondary-tint: #F472B6;
+  --ion-color-secondary-shade: #68428f;
+  --ion-color-secondary-tint: #845bb0;
 
   /** tertiary **/
-  --ion-color-tertiary: #F59E0B;
-  --ion-color-tertiary-rgb: 245, 158, 11;
+  --ion-color-tertiary: #f093fb;
+  --ion-color-tertiary-rgb: 240, 147, 251;
   --ion-color-tertiary-contrast: #ffffff;
   --ion-color-tertiary-contrast-rgb: 255, 255, 255;
-  --ion-color-tertiary-shade: #D97706;
-  --ion-color-tertiary-tint: #FBBF24;
+  --ion-color-tertiary-shade: #d482dd;
+  --ion-color-tertiary-tint: #f2a1fb;
 
   /** success **/
   --ion-color-success: #10B981;
@@ -76,9 +77,34 @@ http://ionicframework.com/docs/theming/ */
   --ion-color-light-tint: #F9FAFB;
 }
 
-/* Custom gradient background for the app */
-.gradient-background {
-  background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 50%, #EF4444 100%);
+/* Enhanced header styling */
+ion-header.header-translucent {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+ion-toolbar.header-toolbar {
+  --background: rgba(255, 255, 255, 0.1);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --color: white;
+}
+
+/* Improved button styling */
+ion-button {
+  --border-radius: 12px;
+  font-weight: 600;
+  text-transform: none;
+}
+
+ion-button.header-settings-btn {
+  --background: rgba(255, 255, 255, 0.1);
+  --background-hover: rgba(255, 255, 255, 0.2);
+  --color: white;
+  --border-radius: 12px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-right: 8px;
 }
 
 /* Smooth transitions for all interactive elements */
@@ -88,21 +114,21 @@ http://ionicframework.com/docs/theming/ */
 
 /* Custom scrollbar for webkit browsers */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(139, 92, 246, 0.5);
-  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 92, 246, 0.7);
+  background: rgba(255, 255, 255, 0.5);
 }
 
 /* Ensure proper touch targets on mobile */
@@ -113,6 +139,19 @@ http://ionicframework.com/docs/theming/ */
   
   ion-item {
     --min-height: 48px;
+  }
+  
+  .header-section {
+    margin: 0.5rem;
+    padding: 1.5rem 1rem 1rem;
+  }
+  
+  .main-title {
+    font-size: 1.75rem;
+  }
+  
+  .main-subtitle {
+    font-size: 0.9rem;
   }
 }
 
@@ -127,13 +166,11 @@ http://ionicframework.com/docs/theming/ */
 .mood-gradient-creative { background: linear-gradient(135deg, #FB923C, #FDE047); }
 .mood-gradient-default { background: linear-gradient(135deg, #e0e7ff, #f3f4f6); }
 
-.mood-card {
-  color: #fff;
-  border-radius: 1rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-.mood-card:hover, .mood-card.selected-mood {
-  transform: scale(1.05);
-  box-shadow: 0 6px 24px rgba(0,0,0,0.18);
-}
+/* Glass morphism effects */
+.glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
