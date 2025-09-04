@@ -20,7 +20,8 @@ import {
   IonText,
   IonChip,
   IonBadge,
-  IonRippleEffect
+  IonRippleEffect,
+  IonButtons
 } from '@ionic/react';
 import { 
   settings, 
@@ -36,7 +37,9 @@ import {
   heart as romanticIcon,
   moon as mysteriousIcon,
   walk as adventureIcon,
-  brush as creativeIcon
+  brush as creativeIcon,
+  sparkles,
+  image as imageIcon
 } from 'ionicons/icons';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { MoodCard } from '../components/MoodCard';
@@ -215,52 +218,69 @@ export const Home: React.FC = () => {
 
   return (
     <IonPage>
-      <IonHeader translucent>
-        <IonToolbar className="gradient-background">
-          <IonTitle className="text-white font-bold">
-            Mood Wallpaper
+      <IonHeader translucent className="ion-no-border">
+        <IonToolbar color="transparent" className="header-toolbar">
+          <IonTitle className="header-title">
+            <div className="flex items-center justify-center gap-2">
+              <IonIcon icon={sparkles} className="text-white text-xl" />
+              <span className="text-white font-bold text-lg">Mood Wallpaper</span>
+            </div>
           </IonTitle>
+          <IonButtons slot="end">
+            <IonButton
+              fill="clear"
+              onClick={() => {
+                triggerHaptic();
+                setShowSettings(true);
+              }}
+              className="header-settings-btn"
+              data-testid="header-settings-button"
+            >
+              <IonIcon icon={settings} className="text-white text-xl" />
+            </IonButton>
+          </IonButtons>
         </IonToolbar>
       </IonHeader>
 
-      <IonContent fullscreen className="gradient-background">
+      <IonContent fullscreen className="main-content">
         {/* Header Content */}
-        <div className="text-center pt-6 pb-4 px-4">
+        <div className="header-section">
           <IonText>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">
+            <h1 className="main-title">
               Mood Wallpaper Generator
             </h1>
-            <p className="text-base sm:text-lg text-white opacity-90">
+            <p className="main-subtitle">
               Select your mood and get a personalized wallpaper
             </p>
           </IonText>
 
           {/* Provider Status Chips */}
-          <div className="flex flex-wrap justify-center gap-2 mt-4">
-            <IonChip className="bg-white bg-opacity-20 backdrop-blur-sm">
-              <span className="text-lg mr-1">{AI_PROVIDERS[selectedAIProvider]?.icon || '🤖'}</span>
-              <IonText className="text-white text-sm font-medium">
+          <div className="provider-chips">
+            <IonChip className="provider-chip ai-chip">
+              <span className="provider-icon">{AI_PROVIDERS[selectedAIProvider]?.icon || '🤖'}</span>
+              <IonText className="provider-text">
                 {AI_PROVIDERS[selectedAIProvider]?.name || 'AI'}
               </IonText>
             </IonChip>
 
             {(selectedAIProvider === 'free' && selectedImageProvider !== 'picsum') && (
-              <IonChip className="bg-white bg-opacity-20 backdrop-blur-sm">
-                <span className="text-lg mr-1">{IMAGE_PROVIDERS[selectedImageProvider]?.icon || '🖼️'}</span>
-                <IonText className="text-white text-sm font-medium">
+              <IonChip className="provider-chip image-chip">
+                <span className="provider-icon">{IMAGE_PROVIDERS[selectedImageProvider]?.icon || '🖼️'}</span>
+                <IonText className="provider-text">
                   {IMAGE_PROVIDERS[selectedImageProvider]?.name || 'Images'}
                 </IonText>
               </IonChip>
             )}
 
             {customQuote && (
-              <IonChip color="success">
+              <IonChip className="provider-chip custom-quote-chip">
                 <IonIcon icon={create} />
-                <IonText>Custom Quote</IonText>
+                <IonText className="provider-text">Custom Quote</IonText>
                 <IonButton
                   fill="clear"
                   size="small"
                   onClick={() => setCustomQuote(null)}
+                  className="custom-quote-remove"
                 >
                   ×
                 </IonButton>
@@ -270,7 +290,7 @@ export const Home: React.FC = () => {
 
           {/* Status Messages */}
           {((selectedImageProvider !== 'picsum' && !hasCurrentImageKey) || (selectedAIProvider !== 'free' && !hasCurrentAIKey)) && (
-            <IonText className="block mt-3 text-sm text-white opacity-80">
+            <IonText className="status-message">
               <p>
                 {selectedAIProvider === 'free' && selectedImageProvider === 'picsum'
                   ? 'Using free providers. Add API keys for enhanced quality.'
@@ -281,7 +301,7 @@ export const Home: React.FC = () => {
         </div>
 
         {/* Mood Selection Grid */}
-        <IonGrid className="px-2">
+        <IonGrid className="mood-grid">
           <IonRow>
             {Object.values(MOODS).map((mood) => {
               // Gradient class name, fallback to default if missing
@@ -313,26 +333,26 @@ export const Home: React.FC = () => {
         </IonGrid>
 
         {/* Content Area */}
-        <div className="px-4 pb-20">
+        <div className="content-area">
           {isLoading && (
-            <div className="text-center py-8">
-              <IonText className="text-white">
-                <p className="mb-4">Creating your personalized wallpaper...</p>
+            <div className="loading-section">
+              <IonText>
+                <p className="loading-text">Creating your personalized wallpaper...</p>
               </IonText>
-              <div className="flex justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+              <div className="loading-spinner-container">
+                <div className="loading-spinner"></div>
               </div>
             </div>
           )}
 
           {(imageError || quoteError) && !isLoading && (
-            <IonCard className="bg-orange-100 border border-orange-400 mx-auto max-w-2xl">
+            <IonCard className="error-card">
               <IonCardContent>
-                <div className="flex items-center gap-2 text-orange-700">
-                  <span className="text-lg">⚠️</span>
+                <div className="error-content">
+                  <span className="error-icon">⚠️</span>
                   <div>
-                    <p className="font-medium">Using fallback content</p>
-                    <p className="text-sm">
+                    <p className="error-title">Using fallback content</p>
+                    <p className="error-description">
                       {imageError && quoteError ?
                         "External services temporarily unavailable." :
                         imageError ? imageError : quoteError
@@ -345,14 +365,14 @@ export const Home: React.FC = () => {
           )}
 
           {wallpaperData && !isLoading && (
-            <div className="max-w-4xl mx-auto space-y-4">
+            <div className="wallpaper-container">
               <ImageDisplay
                 image={wallpaperData.image}
                 quote={wallpaperData.quote}
                 themeId={selectedTheme}
               />
 
-              <div className="flex justify-center">
+              <div className="download-container">
                 <DownloadButton
                   mood={wallpaperData.mood}
                   disabled={isLoading}
@@ -362,9 +382,9 @@ export const Home: React.FC = () => {
           )}
 
           {!selectedMood && !isLoading && (
-            <div className="text-center text-white py-8">
+            <div className="instruction-section">
               <IonText>
-                <p className="text-lg">Choose a mood above to get started</p>
+                <p className="instruction-text">Choose a mood above to get started</p>
               </IonText>
             </div>
           )}
